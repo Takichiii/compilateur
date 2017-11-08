@@ -13,7 +13,7 @@ public class AnalyserLexical {
 		ligne=0;
 		colonne=0;
 	}
-	
+	//test
 	public Token getNextToken() throws IOException{
 		boolean find = false;
 		while (!find)
