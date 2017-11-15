@@ -8,12 +8,11 @@ public enum NoeudType {
 	
 	//type de noeud pour un identifiant
 	ND_REFVAR("id"),
-	ND_CREERVAR("id"),
-	//?
-	//?
+	ND_AFFVAR("id"),
+	ND_BLOCK("block"),
+	ND_VARDECL("varDecl"),
 	
 	ND_CONST("valeur")
-	
 	
 	;
 	public String valeur;

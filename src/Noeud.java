@@ -3,23 +3,51 @@ import java.util.List;
 
 public class Noeud {
 	
-	public NoeudType type;
-	public int valeur;
-	public String nom;
-	public List<Noeud> enfants;
+	private NoeudType type;
+	private int slot;
+	private int valeur;
+	private Token token;
+	private List<Noeud> enfants;
 
 	public Noeud(NoeudType type, int valeur){
 		this.type = type;
 		this.valeur = valeur;
 	}
-	public Noeud(NoeudType type, String nom){
+	public Noeud(NoeudType type, Token token){
 		this.type = type;
-		this.nom = nom;
+		this.token = token;
 	}
 	public Noeud(NoeudType type, List<Noeud> enfants){
 		this.type = type;
 		this.enfants = enfants; 
 	}
+	
+    public void print() {
+        print("", true);
+    }
+	
+    private void print(String prefix, boolean isTail) {
+    	String str  = "";
+    	if (type == NoeudType.ND_CONST)
+    		str=Integer.toString(valeur);
+    	else if (type == NoeudType.ND_REFVAR)
+    		str=getIdentifiant();
+    	else
+    		str=type.valeur;
+        System.out.println(prefix + (isTail ? "└── " : "├── ") + str);
+        for (int i = 0; i < enfants.size() - 1; i++) {
+            enfants.get(i).print(prefix + (isTail ? "    " : "│   "), false);
+        }
+        if (enfants.size() > 0) {
+        	enfants.get(enfants.size() - 1)
+                    .print(prefix + (isTail ?"    " : "│   "), true);
+        }
+    }
+	
+	public String getIdentifiant() {
+		return token.getIdentifiant();
+	}
+    
 	public NoeudType getType() {
 		return type;
 	}
@@ -32,17 +60,23 @@ public class Noeud {
 	public void setValeur(int valeur) {
 		this.valeur = valeur;
 	}
-	public String getNom() {
-		return nom;
+	public Token getToken() {
+		return token;
 	}
-	public void setNom(String nom) {
-		this.nom = nom;
+	public void setNom(Token token) {
+		this.token = token;
 	}
 	public List<Noeud> getEnfants() {
 		return enfants;
 	}
 	public void setEnfants(List<Noeud> enfants) {
 		this.enfants = enfants;
+	}
+	public int getSlot() {
+		return slot;
+	}
+	public void setSlot(int slot) {
+		this.slot = slot;
 	}
 	
 	

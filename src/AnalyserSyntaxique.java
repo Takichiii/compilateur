@@ -21,7 +21,7 @@ public class AnalyserSyntaxique {
 			return new Noeud(NoeudType.ND_CONST, t.getValeur());
 		}
 		if (t.categorie == KeyWord.TOK_ID){
-			return new Noeud(NoeudType.ND_REFVAR, t.getIdentifiant());
+			return new Noeud(NoeudType.ND_REFVAR, t);
 		}
 		if (t.categorie == KeyWord.TOK_MOINS){
 			Noeud N = primaire(getNextToken());
@@ -101,7 +101,7 @@ public class AnalyserSyntaxique {
 		if (n.getType() == NoeudType.ND_CONST)
 			System.out.print(n.getValeur());
 		if (n.getType() == NoeudType.ND_REFVAR)
-			System.out.print(n.getNom());
+			System.out.print(n.getIdentifiant());
 		if (n.getType() == NoeudType.ND_MOINSU) {
 			System.out.print("-");
 			afficher(n.getEnfants().get(0)); //la liste de tokens ne contient qu'une seule valeur
