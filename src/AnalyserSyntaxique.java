@@ -85,13 +85,128 @@ public class AnalyserSyntaxique {
 			enfants.add(N2);
 			return new Noeud(NoeudType.ND_MOINS, enfants);
 		}
-		//to do %
+		//TODO %
 		undo();
 		return N;
 
 	}
-	
-	
+
+	public Noeud comparaison(Token t) throws Exception {
+		Noeud N = terme(t);
+		if (N == null) {
+			return null;
+		}
+		//TODO
+		return N;
+	}
+
+	public Noeud logique(Token t) throws Exception {
+		Noeud N = comparaison(t);
+		if (N == null) {
+			return null;
+		}
+		//TODO
+		return N;
+	}
+
+	public Noeud expression(Token t) throws Exception {
+		Noeud N = logique(t);
+		if (N == null) {
+			return null;
+		}
+		//TODO
+		return N;
+	}
+
+	public Noeud affectation(Token t) throws Exception {
+		if (t.categorie == KeyWord.TOK_ID){
+			t = getNextToken();
+			if (t.categorie == KeyWord.TOK_AFF){
+
+				Noeud N = expression(getNextToken());
+				if (N == null) {
+					throw  new Exception("Problème : affectation sans valeur!");
+				}
+				List<Noeud> enfants = new ArrayList<Noeud>();
+				enfants.add(N);
+				return new Noeud(NoeudType.ND_AFFVAR, enfants);
+
+			}
+			else {
+				undo();
+			}
+		}
+		return null;
+	}
+
+
+	public Noeud statement(Token t) throws Exception {
+		if (t.categorie == KeyWord.TOK_ACCOLADE_O){
+
+
+			List<Noeud> enfants = new ArrayList<Noeud>();
+			Noeud N;
+			t=getNextToken();
+			while((N = statement(t))!=null)
+			{
+				enfants.add(N);
+				t=getNextToken();
+			}
+			if ( ! (t.categorie == KeyWord.TOK_ACCOLADE_F)){
+				throw new Exception("Problème : pas de '}'");
+			}
+			else
+			{
+				return new Noeud(NoeudType.ND_BLOCK, enfants);
+			}
+		}
+		//A';' | E ';'
+		Noeud N = affectation(t);
+		if (N != null || (N = expression(t)) != null){
+			t = getNextToken();
+			if (t.categorie == KeyWord.TOK_PV){
+				return N;
+			}else {
+				throw new Exception("Problème : omission de ';' ");
+			}
+		}
+
+		//if '('E')' S ('else' S)?
+		if (t.categorie == KeyWord.TOK_IF){
+			t = getNextToken();
+			if (t.categorie == KeyWord.TOK_PARENTHESE_O){
+				N = expression(getNextToken());
+				if (N == null){
+					throw new Exception("Problème : omission de la condition du if");
+				}
+				t = getNextToken();
+				if (t.categorie == KeyWord.TOK_PARENTHESE_F){
+					N = statement(getNextToken());
+					if (N == null){
+						throw new Exception("Problème : omission du statement du if");
+					}
+
+					if (t.categorie == KeyWord.TOK_ELSE){
+						N = statement(getNextToken());
+						if (N == null){
+							throw new Exception("Problème : omission du statement du else");
+						}
+					}
+				}
+
+			}
+
+		}
+		else {
+			throw new Exception("Problème : if tout seul");
+			
+		}
+
+		return null;
+	}
+
+
+
 	public void afficher(Noeud n)
 	{
 		if (n==null)
@@ -157,10 +272,13 @@ public class AnalyserSyntaxique {
 		listToken.add(new Token(3, 1, 0));
 		listToken.add(new Token(KeyWord.TOK_ADD, 1, 0));
 		listToken.add(new Token(3, 1, 0));
+
 		listToken.add(new Token(KeyWord.TOK_DIV, 1, 0));
 		listToken.add(new Token(3, 1, 0));
+
 		AnalyserSyntaxique a = new AnalyserSyntaxique(listToken);
 		Noeud n = a.terme(a.getNextToken());
+		n.print();
 		a.afficher(n);
 		
 	}

@@ -12,14 +12,16 @@ public class Noeud {
 	public Noeud(NoeudType type, int valeur){
 		this.type = type;
 		this.valeur = valeur;
+		this.enfants = new ArrayList<>();
 	}
 	public Noeud(NoeudType type, Token token){
 		this.type = type;
 		this.token = token;
+		this.enfants = new ArrayList<>();
 	}
 	public Noeud(NoeudType type, List<Noeud> enfants){
 		this.type = type;
-		this.enfants = enfants; 
+		this.enfants = enfants;
 	}
 	
     public void print() {

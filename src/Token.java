@@ -76,4 +76,15 @@ public class Token {
 		this.colonne = colonne;
 	}
 
+	@Override
+	public String toString() {
+
+		if (valeur == 0) {
+			return identifiant;
+		}
+		if (identifiant == null) {
+			return Integer.toString(valeur);
+		}
+		return "autre";
+	}
 }

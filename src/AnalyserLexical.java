@@ -1,15 +1,21 @@
 import java.io.Reader;
+import java.util.List;
 
 public class AnalyserLexical {
 
 	public Reader reader;
 	public int ligne;
 	public int colonne;
+	public List<Token> listToken;
 	
 	public AnalyserLexical (Reader reader){
 		this.reader=reader;
 		ligne=0;
 		colonne=0;
+	}
+
+	public List<Token> getListToken() {
+		return listToken;
 	}
 	//test
 	/*

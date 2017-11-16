@@ -16,7 +16,8 @@ public enum KeyWord{
 	TOK_ACCOLADE_F("}"),
 	TOK_CROCHET_O("{"),
 	TOK_CROCHET_F("]"),
-	
+
+	TOK_PV(";"),
 
 	TOK_MUL("*"),
 	TOK_MOINS("-"),
@@ -24,7 +25,9 @@ public enum KeyWord{
 	TOK_DIV("/"),
 	
 	TOK_ID("id"),
-	TOK_VALEUR("valeur")
+	TOK_VALEUR("valeur"),
+
+	TOK_AFF("=");
 	
 	
 	;
