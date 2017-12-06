@@ -27,7 +27,20 @@ public enum KeyWord{
 	TOK_ID("id"),
 	TOK_VALEUR("valeur"),
 
-	TOK_AFF("=");
+	TOK_AFF("="),
+
+	TOK_ET("&&"),
+	TOK_OU("||"),
+	TOK_MOD("%"),
+	TOK_EQUAL("=="),
+	TOK_DIFF("!="),
+	TOK_INF("<"),
+	TOK_INFEQUAL("<="),
+	TOK_SUP(">"),
+	TOK_SUPEQUAL(">="),
+
+
+	;
 	
 	
 	;

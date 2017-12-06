@@ -21,7 +21,25 @@ public class AnalyserSyntaxique {
 			return new Noeud(NoeudType.ND_CONST, t.getValeur());
 		}
 		if (t.categorie == KeyWord.TOK_ID){
-			return new Noeud(NoeudType.ND_REFVAR, t);
+			Token t1 = getNextToken();
+			//appel de fonctions
+			if (t1.getCategorie() == KeyWord.TOK_PARENTHESE_O){
+				//TODO
+				List<Noeud> enfants = new ArrayList<Noeud>();
+				Noeud N;
+				t=getNextToken();
+				while((N = expression(t))!=null)
+				{
+					enfants.add(N);
+					t=getNextToken();
+				}
+				return new Noeud(NoeudType.ND_FONCTION, t);
+			}
+			//identifiant
+			else {
+				undo();
+				return new Noeud(NoeudType.ND_REFVAR, t);
+			}
 		}
 		if (t.categorie == KeyWord.TOK_MOINS){
 			Noeud N = primaire(getNextToken());
@@ -31,6 +49,7 @@ public class AnalyserSyntaxique {
 			enfants.add(N);
 			return new Noeud(NoeudType.ND_MOINSU, enfants);
 		}
+
 			
 		return null;
 	}
@@ -45,6 +64,8 @@ public class AnalyserSyntaxique {
 			return N;
 		if (t1.getCategorie() == KeyWord.TOK_MUL) {
 			Noeud N2 = facteur(getNextToken());
+			if (N2 == null)
+				throw new Exception("Y a rien après le * wesh");
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
@@ -52,12 +73,22 @@ public class AnalyserSyntaxique {
 		}
 		else if(t1.getCategorie() == KeyWord.TOK_DIV){
 			Noeud N2 = facteur(getNextToken());
+			if (N2 == null)
+				throw new Exception("Y a rien après le / wesh");
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
 			return new Noeud(NoeudType.ND_DIV, enfants);
 		}
-		//to do %
+		else if(t1.getCategorie() == KeyWord.TOK_MOD){
+			Noeud N2 = terme(getNextToken());
+			if (N2 == null)
+				throw new Exception("Y a rien après le % wesh");
+			List<Noeud> enfants = new ArrayList<Noeud>();
+			enfants.add(N);
+			enfants.add(N2);
+			return new Noeud(NoeudType.ND_MOD, enfants);
+		}
 		undo();
 		return N;
 
@@ -72,20 +103,23 @@ public class AnalyserSyntaxique {
 		if (t1 == null)
 			return N;
 		if (t1.getCategorie() == KeyWord.TOK_ADD) {
-			Noeud N2 = facteur(getNextToken());
+			Noeud N2 = terme(getNextToken());
+			if (N2 == null)
+				throw new Exception("Y a rien après le + wesh");
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
 			return new Noeud(NoeudType.ND_ADD, enfants);
 		}
 		else if(t1.getCategorie() == KeyWord.TOK_MOINS){
-			Noeud N2 = facteur(getNextToken());
+			Noeud N2 = terme(getNextToken());
+			if (N2 == null)
+				throw new Exception("Y a rien après le - wesh");
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
 			return new Noeud(NoeudType.ND_MOINS, enfants);
 		}
-		//TODO %
 		undo();
 		return N;
 
@@ -96,16 +130,81 @@ public class AnalyserSyntaxique {
 		if (N == null) {
 			return null;
 		}
-		//TODO
+		Token t1 = getNextToken();
+		if (t1 == null)
+			return N;
+		if (t1.getCategorie() == KeyWord.TOK_EQUAL) {
+			Noeud N2 = comparaison(getNextToken());
+			if (N2 == null)
+				throw new Exception("Y a rien après le == wesh");
+			List<Noeud> enfants = new ArrayList<Noeud>();
+			enfants.add(N);
+			enfants.add(N2);
+			return new Noeud(NoeudType.ND_EQUAL, enfants);
+		}else if (t1.getCategorie() == KeyWord.TOK_DIFF) {
+			Noeud N2 = comparaison(getNextToken());
+			if (N2 == null)
+				throw new Exception("Y a rien après le != wesh");
+			List<Noeud> enfants = new ArrayList<Noeud>();
+			enfants.add(N);
+			enfants.add(N2);
+			return new Noeud(NoeudType.ND_DIFF, enfants);
+		}else if (t1.getCategorie() == KeyWord.TOK_SUP) {
+			Noeud N2 = comparaison(getNextToken());
+			if (N2 == null)
+				throw new Exception("Y a rien après le > wesh");
+			List<Noeud> enfants = new ArrayList<Noeud>();
+			enfants.add(N);
+			enfants.add(N2);
+			return new Noeud(NoeudType.ND_SUP, enfants);
+		}else if (t1.getCategorie() == KeyWord.TOK_SUPEQUAL) {
+			Noeud N2 = comparaison(getNextToken());
+			if (N2 == null)
+				throw new Exception("Y a rien après le >= wesh");
+			List<Noeud> enfants = new ArrayList<Noeud>();
+			enfants.add(N);
+			enfants.add(N2);
+			return new Noeud(NoeudType.ND_SUPEQUAL, enfants);
+		}else if (t1.getCategorie() == KeyWord.TOK_INF) {
+			Noeud N2 = comparaison(getNextToken());
+			if (N2 == null)
+				throw new Exception("Y a rien après le < wesh");
+			List<Noeud> enfants = new ArrayList<Noeud>();
+			enfants.add(N);
+			enfants.add(N2);
+			return new Noeud(NoeudType.ND_INF, enfants);
+		}else if (t1.getCategorie() == KeyWord.TOK_INFEQUAL) {
+			Noeud N2 = comparaison(getNextToken());
+			if (N2 == null)
+				throw new Exception("Y a rien après le <= wesh");
+			List<Noeud> enfants = new ArrayList<Noeud>();
+			enfants.add(N);
+			enfants.add(N2);
+			return new Noeud(NoeudType.ND_INFEQUAL, enfants);
+		}
+		undo();
 		return N;
 	}
 
+	//L -> &&
 	public Noeud logique(Token t) throws Exception {
 		Noeud N = comparaison(t);
 		if (N == null) {
 			return null;
 		}
-		//TODO
+		Token t1 = getNextToken();
+		if (t1 == null)
+			return N;
+		if (t1.getCategorie() == KeyWord.TOK_ET) {
+			Noeud N2 = logique(getNextToken());
+			if (N2 == null)
+				throw new Exception("Y a rien après le et wesh");
+			List<Noeud> enfants = new ArrayList<Noeud>();
+			enfants.add(N);
+			enfants.add(N2);
+			return new Noeud(NoeudType.ND_ET, enfants);
+		}
+		undo();
 		return N;
 	}
 
@@ -114,7 +213,19 @@ public class AnalyserSyntaxique {
 		if (N == null) {
 			return null;
 		}
-		//TODO
+		Token t1 = getNextToken();
+		if (t1 == null)
+			return N;
+		if (t1.getCategorie() == KeyWord.TOK_OU) {
+			Noeud N2 = expression(getNextToken());
+			if (N2 == null)
+				throw new Exception("Y a rien après le ou wesh");
+			List<Noeud> enfants = new ArrayList<Noeud>();
+			enfants.add(N);
+			enfants.add(N2);
+			return new Noeud(NoeudType.ND_OU, enfants);
+		}
+		undo();
 		return N;
 	}
 
@@ -185,7 +296,7 @@ public class AnalyserSyntaxique {
 					if (N == null){
 						throw new Exception("Problème : omission du statement du if");
 					}
-
+					
 					if (t.categorie == KeyWord.TOK_ELSE){
 						N = statement(getNextToken());
 						if (N == null){
@@ -195,11 +306,11 @@ public class AnalyserSyntaxique {
 				}
 
 			}
+			else {
+				throw new Exception("Problème : condition if incorrecte");
 
-		}
-		else {
-			throw new Exception("Problème : if tout seul");
-			
+			}
+
 		}
 
 		return null;
@@ -276,8 +387,12 @@ public class AnalyserSyntaxique {
 		listToken.add(new Token(KeyWord.TOK_DIV, 1, 0));
 		listToken.add(new Token(3, 1, 0));
 
+		listToken.add(new Token(KeyWord.TOK_OU, 1, 0));
+		listToken.add(new Token(5, 1, 0));
+
+
 		AnalyserSyntaxique a = new AnalyserSyntaxique(listToken);
-		Noeud n = a.terme(a.getNextToken());
+		Noeud n = a.expression(a.getNextToken());
 		n.print();
 		a.afficher(n);
 		

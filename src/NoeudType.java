@@ -5,6 +5,9 @@ public enum NoeudType {
 	ND_DIV("/"),
 	ND_MOINS("-"),
 	ND_MOINSU("-"),
+
+	ND_ET("&&"),
+	ND_OU("||"),
 	
 	//type de noeud pour un identifiant
 	ND_REFVAR("id"),
@@ -24,8 +27,15 @@ public enum NoeudType {
 
 	ND_BREAK("break"),
 	ND_CONTINUE("continue"),
+	ND_EQUAL("=="),
+	ND_DIFF("!="),
+	ND_INF("<"),
+	ND_INFEQUAL("<="),
+	ND_SUP(">"),
+	ND_SUPEQUAL(">="),
 
-		;
+
+	ND_FONCTION("fonction");
 
 	public String valeur;
 	private NoeudType(String valeur){
