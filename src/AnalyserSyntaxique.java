@@ -252,9 +252,8 @@ public class AnalyserSyntaxique {
 
 
 	public Noeud statement(Token t) throws Exception {
+		//'{'S*'}'
 		if (t.categorie == KeyWord.TOK_ACCOLADE_O){
-
-
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			Noeud N;
 			t=getNextToken();
@@ -286,35 +285,224 @@ public class AnalyserSyntaxique {
 		if (t.categorie == KeyWord.TOK_IF){
 			t = getNextToken();
 			if (t.categorie == KeyWord.TOK_PARENTHESE_O){
-				N = expression(getNextToken());
-				if (N == null){
+				List<Noeud> enfants = new ArrayList<Noeud>();
+				Noeud E = expression(getNextToken());
+				if (E == null){
 					throw new Exception("Problème : omission de la condition du if");
 				}
 				t = getNextToken();
 				if (t.categorie == KeyWord.TOK_PARENTHESE_F){
-					N = statement(getNextToken());
-					if (N == null){
+					Noeud S1 = statement(getNextToken());
+					if (S1 == null){
 						throw new Exception("Problème : omission du statement du if");
 					}
-					
+					enfants.add(E);
+					enfants.add(S1);
 					if (t.categorie == KeyWord.TOK_ELSE){
-						N = statement(getNextToken());
-						if (N == null){
+						Noeud S2 = statement(getNextToken());
+						if (S2 == null){
 							throw new Exception("Problème : omission du statement du else");
 						}
+						enfants.add(S2);
 					}
+					return new Noeud(NoeudType.ND_IF, enfants);
+				}else {
+					throw new Exception("Problème : omission parenthèse fermante");
 				}
-
 			}
 			else {
-				throw new Exception("Problème : condition if incorrecte");
+				throw new Exception("Problème : omission parenthèse ouvrante");
+
+			}
+
+		}
+		//while '(' E ')' S
+		if (t.categorie == KeyWord.TOK_WHILE){
+			t = getNextToken();
+			if (t.categorie == KeyWord.TOK_PARENTHESE_O){
+				List<Noeud> enfantsLoop = new ArrayList<Noeud>();
+				List<Noeud> enfantsIf = new ArrayList<Noeud>();
+				Noeud E = expression(getNextToken());
+				if (E == null){
+					throw new Exception("Problème : omission de la condition du while");
+				}
+				t = getNextToken();
+				if (t.categorie == KeyWord.TOK_PARENTHESE_F){
+					Noeud S = statement(getNextToken());
+					if (S == null){
+						throw new Exception("Problème : omission du statement du while");
+					}
+					enfantsIf.add(E);
+					enfantsIf.add(S);
+					enfantsIf.add(new Noeud(NoeudType.ND_BREAK));
+					Noeud If = new Noeud(NoeudType.ND_IF, enfantsIf);//noeud if
+					enfantsLoop.add(If);
+					return new Noeud(NoeudType.ND_LOOP, enfantsLoop); //noeud loop
+				}else {
+					throw new Exception("Problème : omission parenthèse fermante");
+				}
+			}
+			else {
+				throw new Exception("Problème : omission parenthèse ouvrante");
 
 			}
 
 		}
 
+		//do S while '(' E ')'
+		//possibilité } mal placée
+		if (t.categorie == KeyWord.TOK_DO) {
+			Noeud S = statement(getNextToken());
+			if (S == null) {
+				throw new Exception("Problème : omission du statement du do");
+			}
+			t = getNextToken();
+			if (t.categorie == KeyWord.TOK_WHILE) {
+				t = getNextToken();
+				if (t.categorie == KeyWord.TOK_PARENTHESE_O) {
+					List<Noeud> enfantsLoop = new ArrayList<Noeud>();
+					List<Noeud> enfantsBlock = new ArrayList<Noeud>();
+					List<Noeud> enfantsIf = new ArrayList<Noeud>();
+					Noeud E = expression(getNextToken());
+					if (E == null) {
+						throw new Exception("Problème : omission de la condition du while");
+					}
+					t = getNextToken();
+					if (t.categorie == KeyWord.TOK_PARENTHESE_F) {
+						//enfants du if
+						enfantsIf.add(E);
+						enfantsIf.add(new Noeud(NoeudType.ND_CONTINUE));
+						enfantsIf.add(new Noeud(NoeudType.ND_BREAK));
+						Noeud If = new Noeud(NoeudType.ND_IF, enfantsIf);//crée noeud if
+
+						//enfants du block
+						enfantsBlock.add(S);
+						enfantsBlock.add(If);
+						Noeud block = new Noeud(NoeudType.ND_BLOCK, enfantsIf);//crée noeud block
+
+						//enfants du loop
+						enfantsLoop.add(block);
+
+						return new Noeud(NoeudType.ND_LOOP, enfantsLoop); //noeud loop
+					} else {
+						throw new Exception("Problème : omission parenthèse fermante");
+					}
+				} else {
+					throw new Exception("Problème : omission parenthèse ouvrante");
+
+				}
+
+			}
+		}
+
+		//for(A1, E, A2)S
+		if (t.categorie == KeyWord.TOK_FOR){
+			t = getNextToken();
+			if (t.categorie == KeyWord.TOK_PARENTHESE_O) {
+				Noeud A1 = statement(getNextToken());
+				if (A1 == null) {
+					throw new Exception("Problème : omission de l'initialisation dans le for");
+				}
+				t = getNextToken();
+				if (t.categorie == KeyWord.TOK_VIRGULE) {
+					Noeud E = expression(getNextToken());
+					if (E == null) {
+						throw new Exception("Problème : omission de la condition d'arrêt dans le for");
+					}
+					t = getNextToken();
+					if (t.categorie == KeyWord.TOK_VIRGULE) {
+						Noeud A2 = statement(getNextToken());
+						if (A2 == null) {
+							throw new Exception("Problème : omission de l'incrémentation dans le for");
+						}
+						t = getNextToken();
+						if (t.categorie == KeyWord.TOK_PARENTHESE_O) {
+							Noeud S = statement(getNextToken());
+							if (S == null) {
+								throw new Exception("Problème : omission du statement du for");
+							}
+							List<Noeud> enfantsBlock = new ArrayList<Noeud>();
+							List<Noeud> enfantsLoop = new ArrayList<Noeud>();
+							List<Noeud> enfantsIf = new ArrayList<Noeud>();
+
+							//enfants if
+							enfantsIf.add(E);
+							enfantsIf.add(S);
+							enfantsIf.add(new Noeud(NoeudType.ND_BREAK));
+							Noeud If = new Noeud(NoeudType.ND_IF, enfantsIf);//crée noeud if
+
+							//enfants loop
+							enfantsLoop.add(A2);
+							enfantsLoop.add(If);
+							Noeud loop = new Noeud(NoeudType.ND_LOOP, enfantsLoop);//crée noeud loop
+
+							//enfants block
+							enfantsBlock.add(A1);
+							Noeud block = new Noeud(NoeudType.ND_BLOCK, enfantsBlock);//crée noeud block
+
+							enfantsLoop.add(block);
+
+							return new Noeud(NoeudType.ND_BLOCK, enfantsLoop); //noeud block
+						}else {
+							throw new Exception("Problème : omission ')' après l'incrémentation dans le for");
+
+						}
+
+					}else {
+						throw new Exception("Problème : omission ',' après la condition d'arrêt dans le for");
+
+					}
+
+				}else {
+					throw new Exception("Problème : omission ',' après initialisation dans le for");
+
+				}
+			}else {
+				throw new Exception("Problème : omission parenthèse ouvrante");
+
+			}
+		}
+
+		//break ;
+		if (t.categorie == KeyWord.TOK_BREAK){
+			t = getNextToken();
+			if (t.categorie == KeyWord.TOK_PV){
+				return new Noeud(NoeudType.ND_BREAK);
+			}else {
+				throw new Exception("Problème : omission de ';' après break");
+			}
+		}
+
+		//continue;
+		if (t.categorie == KeyWord.TOK_CONTINUE){
+			t = getNextToken();
+			if (t.categorie == KeyWord.TOK_PV){
+				return new Noeud(NoeudType.ND_CONTINUE);
+			}else {
+				throw new Exception("Problème : omission de ';' après continue");
+			}
+		}
+
+		//out E;
+		if (t.categorie == KeyWord.TOK_OUT){
+			Noeud E = expression(getNextToken());
+			if (E == null){
+				throw new Exception("Problème : omission de l'expression après le out");
+			}
+			t = getNextToken();
+			if (t.categorie == KeyWord.TOK_PV){
+				List<Noeud> enfants = new ArrayList<Noeud>();
+				enfants.add(E);
+				return new Noeud(NoeudType.ND_OUT, enfants);
+			}else {
+				throw new Exception("Problème : omission de ';' du out");
+			}
+		}
+
+
 		return null;
 	}
+
 
 
 

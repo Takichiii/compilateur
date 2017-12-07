@@ -35,7 +35,7 @@ public enum NoeudType {
 	ND_SUPEQUAL(">="),
 
 
-	ND_FONCTION("fonction");
+	ND_FONCTION("fonction"), ND_OUT("out");
 
 	public String valeur;
 	private NoeudType(String valeur){

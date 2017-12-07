@@ -40,7 +40,7 @@ public enum KeyWord{
 	TOK_SUPEQUAL(">="),
 
 
-	;
+	TOK_OUT("out"), TOK_VIRGULE(",");
 	
 	
 	;

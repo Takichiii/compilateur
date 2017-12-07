@@ -23,8 +23,13 @@ public class Noeud {
 		this.type = type;
 		this.enfants = enfants;
 	}
-	
-    public void print() {
+
+	public Noeud(NoeudType type){ //pour noeuds sans enfants ex break
+		this.type = type;
+		this.enfants = new ArrayList<>();
+	}
+
+	public void print() {
         print("", true);
     }
 	
@@ -80,7 +85,6 @@ public class Noeud {
 	public void setSlot(int slot) {
 		this.slot = slot;
 	}
-	
-	
+
 
 }

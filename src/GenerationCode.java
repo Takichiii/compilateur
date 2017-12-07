@@ -50,7 +50,7 @@ public class GenerationCode {
         }
 
 
-        //TO DO : % AND NOT
+        //TODO : % AND NOT
         else if (N.getType() == NoeudType.ND_MOD){
             sb.append(gencode(N.getEnfants().get(0)));
             sb.append(gencode(N.getEnfants().get(1)));
@@ -63,9 +63,31 @@ public class GenerationCode {
             sb.append("div.i");
             sb.append("\n");
         }
+
+        //IF
+        else if (N.getType() == NoeudType.ND_IF){
+            int L1 = genLabel();
+            int L2 = genLabel();
+            sb.append(gencode(N.getEnfants().get(0))); //gencode(E)
+            sb.append("jumpf" + L1);
+            sb.append(gencode(N.getEnfants().get(1))); //gencode(S1)
+            sb.append("." + L1);
+            if (N.getEnfants().size() == 3) //s'il y a un else
+                sb.append(gencode(N.getEnfants().get(2))); //gencode(S2)
+                sb.append("." + L2);
+            sb.append("\n");
+        }
+
+        //TODO ALL LOOPS...
+
+
         return sb.toString();
     }
 
+    int compteur = 0;
+    public int genLabel(){
+        return compteur++;
+    }
 
     public static void main(String[] args) throws Exception {
         AnalyserLexical L = new AnalyserLexical(new Reader() {
