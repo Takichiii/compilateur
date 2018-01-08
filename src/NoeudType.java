@@ -6,7 +6,7 @@ public enum NoeudType {
 	ND_MOINS("-"),
 	ND_MOINSU("-"),
 
-	ND_ET("&&"),
+	ND_AND("&&"),
 	ND_OU("||"),
 	
 	//type de noeud pour un identifiant
@@ -18,11 +18,12 @@ public enum NoeudType {
 	ND_CONST("valeur"),
 
 	//types de
-	ND_MOD("%"), ND_NOT("!"),
+	ND_MOD("%"),
+	ND_NOT("!"),
 
 	//types pour noeuds conditionnels
 	ND_IF("if"),
-	ND_LOOP("while"),
+	ND_LOOP("loop"),
 
 
 	ND_BREAK("break"),
@@ -35,7 +36,11 @@ public enum NoeudType {
 	ND_SUPEQUAL(">="),
 
 
-	ND_FONCTION("fonction"), ND_OUT("out");
+	ND_DEFFONCTION("D"),
+	ND_CALL("call"),
+	ND_RETURN("return"),
+	ND_MASTER("Z"),
+	ND_OUT("out");//TODO à quoi ça sert
 
 	public String valeur;
 	private NoeudType(String valeur){

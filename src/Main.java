@@ -26,7 +26,7 @@ public class Main {
 		
 		Noeud n;
 		try {
-			n = analyserSyntaxique.statement(analyserSyntaxique.getNextToken());
+			n = analyserSyntaxique.master(analyserSyntaxique.getNextToken());
 //			System.out.println("synta");
 			System.out.println("arbre : ");
  			n.print();

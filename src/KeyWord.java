@@ -40,9 +40,11 @@ public enum KeyWord{
 	TOK_INFEQUAL("<="),
 	TOK_SUP(">"),
 	TOK_SUPEQUAL(">="),
+	TOK_NOT("!"),
 
 
-	TOK_OUT("out"), TOK_VIRGULE(",");
+	TOK_OUT("out"), //TODO
+	TOK_VIRGULE(",");
 	
 	
 	;

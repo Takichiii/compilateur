@@ -24,7 +24,7 @@ public class AnalyserSyntaxique {
 			Token t1 = getNextToken();
 			//appel de fonctions
 			if (t1.getCategorie() == KeyWord.TOK_PARENTHESE_O){
-				//TODO
+				//TODO appel fonction
 				List<Noeud> enfants = new ArrayList<Noeud>();
 				Noeud N;
 				t=getNextToken();
@@ -33,7 +33,7 @@ public class AnalyserSyntaxique {
 					enfants.add(N);
 					t=getNextToken();
 				}
-				return new Noeud(NoeudType.ND_FONCTION, t);
+				return new Noeud(NoeudType.ND_CALL, t);
 			}
 			//identifiant
 			else {
@@ -210,7 +210,7 @@ public class AnalyserSyntaxique {
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
-			return new Noeud(NoeudType.ND_ET, enfants);
+			return new Noeud(NoeudType.ND_AND, enfants);
 		}
 		undo();
 		return N;
@@ -523,52 +523,73 @@ public class AnalyserSyntaxique {
 	}
 	
 	public Noeud definition(Token t) throws Exception {
+		//int ident'('int ident*')' S
+		if (t==null)
+		{
+			return null;
+		}
+		if (t.categorie == KeyWord.TOK_INT) {
+			Token t1 = getNextToken();
+			if (t1 != null && t1.categorie == KeyWord.TOK_ID) {
+				t1 = getNextToken();
+				if (t1 != null && t1.categorie == KeyWord.TOK_PARENTHESE_O) {
+					t1 = getNextToken();
+					if (t1 != null && t1.categorie == KeyWord.TOK_INT) {
+						t1 = getNextToken();
+						if (t1 != null && t1.categorie == KeyWord.TOK_ID) {
+							t1 = getNextToken();
+							while (t1 != null && t1.categorie == KeyWord.TOK_VIRGULE) {
+								t1 = getNextToken();
+								if (t1 != null && t1.categorie == KeyWord.TOK_INT) {
+									t1 = getNextToken();
+									if (t1 != null && t1.categorie == KeyWord.TOK_ID) {
+										t1 = getNextToken();
+									}
+									else throw new AnalyserSyntaxiqueException("id manquant", t);
+								}
+								else throw new AnalyserSyntaxiqueException("int manquant", t);
+							}
+						}
+						else throw new AnalyserSyntaxiqueException("id manquant", t);
+					}
+					if (t1 != null && t1.categorie == KeyWord.TOK_PARENTHESE_F) {
+						Noeud S = statement(getNextToken());
+						if (S == null)
+							throw new AnalyserSyntaxiqueException("Y a rien après la signature wesh' ", t1);
+						List<Noeud> enfants = new ArrayList<Noeud>();
+						enfants.add(S);
+						return new Noeud(NoeudType.ND_DEFFONCTION, enfants);
+					}
+					else throw new AnalyserSyntaxiqueException("Oublie de la parenthèse fermante", t);
+				}
+				else throw new AnalyserSyntaxiqueException("Définition fonction sans '(' " , t);
+			}
+			else throw new AnalyserSyntaxiqueException("Définition fonction incomplète : int tout seul " , t);
+		}
+
 		return null;
 	}
 
 	public Noeud master(Token t) throws Exception {
-		return null;
+		if (t == null){
+			throw new AnalyserSyntaxiqueException("Aucun token !", t);
+		}
+		List<Noeud> enfants = new ArrayList<Noeud>();
+		Noeud D;
+		while((D = definition(t))!=null)
+		{
+			enfants.add(D);
+			t=getNextToken();
+		}
+		if (getNextToken()!= null){
+			throw new AnalyserSyntaxiqueException("token tout seul", t);
+		}
+
+		return new Noeud(NoeudType.ND_MASTER, enfants);
 	}
 	
 
 
-
-
-	public void afficher(Noeud n)
-	{
-		if (n==null)
-		{
-			return;
-		}
-		if (n.getType() == NoeudType.ND_CONST)
-			System.out.print(n.getValeur());
-		if (n.getType() == NoeudType.ND_REFVAR)
-			System.out.print(n.getIdentifiant());
-		if (n.getType() == NoeudType.ND_MOINSU) {
-			System.out.print("-");
-			afficher(n.getEnfants().get(0)); //la liste de tokens ne contient qu'une seule valeur
-		}
-		if (n.getType() == NoeudType.ND_MUL) {
-			afficher(n.getEnfants().get(0));
-			System.out.print("*");
-			afficher(n.getEnfants().get(1));
-		}
-		if (n.getType() == NoeudType.ND_DIV) {
-			afficher(n.getEnfants().get(0));
-			System.out.print("/");
-			afficher(n.getEnfants().get(1));
-		}
-		if (n.getType() == NoeudType.ND_ADD) {
-			afficher(n.getEnfants().get(0));
-			System.out.print("+");
-			afficher(n.getEnfants().get(1));
-		}
-		if (n.getType() == NoeudType.ND_MOINS) {
-			afficher(n.getEnfants().get(0));
-			System.out.print("-");
-			afficher(n.getEnfants().get(1));
-		}
-	}
 
 	public Token getNextToken(){
 		if (compteur<tokenList.size())

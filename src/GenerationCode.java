@@ -50,17 +50,22 @@ public class GenerationCode {
         }
 
 
-        //TODO : % AND NOT
+        //% AND NOT
         else if (N.getType() == NoeudType.ND_MOD){
             sb.append(gencode(N.getEnfants().get(0)));
             sb.append(gencode(N.getEnfants().get(1)));
-            sb.append("div.i");
+            sb.append("mod.i");
             sb.append("\n");
         }
         else if (N.getType() == NoeudType.ND_NOT){
             sb.append(gencode(N.getEnfants().get(0)));
+            sb.append("not.i");
+            sb.append("\n");
+        }
+        else if (N.getType() == NoeudType.ND_AND){
+            sb.append(gencode(N.getEnfants().get(0)));
             sb.append(gencode(N.getEnfants().get(1)));
-            sb.append("div.i");
+            sb.append("and.i");
             sb.append("\n");
         }
 
@@ -71,15 +76,41 @@ public class GenerationCode {
             sb.append(gencode(N.getEnfants().get(0))); //gencode(E)
             sb.append("jumpf" + L1);
             sb.append(gencode(N.getEnfants().get(1))); //gencode(S1)
+            sb.append("jump" + L2);
             sb.append("." + L1);
             if (N.getEnfants().size() == 3) //s'il y a un else
                 sb.append(gencode(N.getEnfants().get(2))); //gencode(S2)
-                sb.append("." + L2);
+            sb.append("." + L2);
             sb.append("\n");
         }
 
-        //TODO ALL LOOPS...
 
+        //WHILE
+        else if (N.getType() == NoeudType.ND_LOOP){
+            int L = genLabel();
+            sb.append("." + L);
+            sb.append(gencode(N.getEnfants().get(0)));
+            sb.append("jump" + L);
+        }
+
+        //TODO BLOCK fini?
+        else if (N.getType() == NoeudType.ND_BLOCK){
+            int L = genLabel();
+            sb.append("." + L);
+            sb.append(gencode(N.getEnfants().get(0)));
+            sb.append(gencode(N.getEnfants().get(1)));
+            sb.append("jump" + L);
+        }
+        //TODO BREAK CONTINUE
+        else if (N.getType() == NoeudType.ND_BREAK || N.getType() == NoeudType.ND_CONTINUE){
+            sb.append("push");//TODO
+            int L1 = genLabel();
+            int L2 = genLabel();
+            sb.append("." + L1);
+            sb.append(gencode(N.getEnfants().get(0)));
+            sb.append("." + L2);
+            sb.append("pop"); // TODO
+        }
 
         return sb.toString();
     }
@@ -116,7 +147,6 @@ public class GenerationCode {
         sb.append(".start \n");
         GenerationCode G = new GenerationCode();
         Noeud N = A.terme(A.getNextToken());
-        A.afficher(N);
         sb.append(G.gencode(N));
         sb.append("out.i \n");
         sb.append("halt \n");
