@@ -14,8 +14,10 @@ public enum KeyWord{
 	TOK_PARENTHESE_F(")"),
 	TOK_ACCOLADE_O("{"),
 	TOK_ACCOLADE_F("}"),
-	TOK_CROCHET_O("{"),
+	TOK_CROCHET_O("["),
 	TOK_CROCHET_F("]"),
+	TOK_DLB_QUOTE("\""),
+	TOK_QUOTE("'"),
 
 	TOK_PV(";"),
 

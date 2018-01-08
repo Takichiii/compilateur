@@ -1,18 +1,40 @@
 import java.io.*;
+import java.util.ArrayList;
 
 public class Main {
 
-	public static void main(String[] args) throws IOException {
-		if (args.length==0)
+	public static void main(String[] args) throws Exception {
+		/*if (args.length==0)
 		{
 			System.err.println("Veuillez entrer le chemin du fichier � compiler !");
 			return;
-		}
-		InputStream in = new FileInputStream(args[0]);
+		}*/
+		InputStream in = new FileInputStream(new File("src/ressource/test.txt"));
 		Reader reader = new InputStreamReader(in);
 		
-		AnalyserLexical analyserLexical = new AnalyserLexical(reader);	
-		//AnalyserSyntaxique analyserSyntaxique = new AnalyserSyntaxique();
+		AnalyserLexical analyserLexical = new AnalyserLexical(reader);
+		ArrayList<Token> list = (ArrayList<Token>) analyserLexical.getAllTokens();
+		for (Token t : list)
+		{
+			if ( t.categorie== KeyWord.TOK_ID)
+				System.out.println(t.identifiant);
+			else if (t.categorie == KeyWord.TOK_VALEUR)
+				System.out.println(t.valeur);
+			else System.out.println(t.categorie.valeur);
+		}
+		AnalyserSyntaxique analyserSyntaxique = new AnalyserSyntaxique(list);
+		
+		Noeud n;
+		try {
+			n = analyserSyntaxique.statement(analyserSyntaxique.getNextToken());
+//			System.out.println("synta");
+			System.out.println("arbre : ");
+ 			n.print();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 

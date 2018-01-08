@@ -12,7 +12,7 @@ public class AnalyserSyntaxique {
 	}
 	
 	//crée noeud pour les types primaires
-	public Noeud primaire(Token t) throws Exception {
+	public Noeud primaire(Token t) throws AnalyserSyntaxiqueException {
 		if (t==null)
 		{
 			return null;
@@ -44,7 +44,7 @@ public class AnalyserSyntaxique {
 		if (t.categorie == KeyWord.TOK_MOINS){
 			Noeud N = primaire(getNextToken());
 			if (N == null)
-				throw  new Exception("Problème : pas de valeur après le moins unitaire!");
+				throw  new AnalyserSyntaxiqueException("Problème : pas de valeur après le moins unitaire!", t);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			return new Noeud(NoeudType.ND_MOINSU, enfants);
@@ -54,7 +54,9 @@ public class AnalyserSyntaxique {
 		return null;
 	}
 
-	public Noeud facteur(Token t) throws Exception {
+	public Noeud facteur(Token t) throws AnalyserSyntaxiqueException {
+		if (t==null)
+			return null;
 		Noeud N = primaire(t);
 		if (N == null) {
 			return null;
@@ -65,7 +67,7 @@ public class AnalyserSyntaxique {
 		if (t1.getCategorie() == KeyWord.TOK_MUL) {
 			Noeud N2 = facteur(getNextToken());
 			if (N2 == null)
-				throw new Exception("Y a rien après le * wesh");
+				throw new AnalyserSyntaxiqueException("Y a rien après le * wesh", t1);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
@@ -74,7 +76,7 @@ public class AnalyserSyntaxique {
 		else if(t1.getCategorie() == KeyWord.TOK_DIV){
 			Noeud N2 = facteur(getNextToken());
 			if (N2 == null)
-				throw new Exception("Y a rien après le / wesh");
+				throw new AnalyserSyntaxiqueException("Y a rien après le / wesh", t1);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
@@ -83,7 +85,7 @@ public class AnalyserSyntaxique {
 		else if(t1.getCategorie() == KeyWord.TOK_MOD){
 			Noeud N2 = terme(getNextToken());
 			if (N2 == null)
-				throw new Exception("Y a rien après le % wesh");
+				throw new AnalyserSyntaxiqueException("Y a rien après le % wesh", t1);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
@@ -94,7 +96,9 @@ public class AnalyserSyntaxique {
 
 	}
 
-	public Noeud terme(Token t) throws Exception {
+	public Noeud terme(Token t) throws AnalyserSyntaxiqueException {
+		if (t==null)
+			return null;
 		Noeud N = facteur(t);
 		if (N == null) {
 			return null;
@@ -105,7 +109,7 @@ public class AnalyserSyntaxique {
 		if (t1.getCategorie() == KeyWord.TOK_ADD) {
 			Noeud N2 = terme(getNextToken());
 			if (N2 == null)
-				throw new Exception("Y a rien après le + wesh");
+				throw new AnalyserSyntaxiqueException("Y a rien après le + wesh", t1);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
@@ -114,7 +118,7 @@ public class AnalyserSyntaxique {
 		else if(t1.getCategorie() == KeyWord.TOK_MOINS){
 			Noeud N2 = terme(getNextToken());
 			if (N2 == null)
-				throw new Exception("Y a rien après le - wesh");
+				throw new AnalyserSyntaxiqueException("Y a rien après le - wesh", t1);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
@@ -125,7 +129,9 @@ public class AnalyserSyntaxique {
 
 	}
 
-	public Noeud comparaison(Token t) throws Exception {
+	public Noeud comparaison(Token t) throws AnalyserSyntaxiqueException {
+		if (t==null)
+			return null;
 		Noeud N = terme(t);
 		if (N == null) {
 			return null;
@@ -136,7 +142,7 @@ public class AnalyserSyntaxique {
 		if (t1.getCategorie() == KeyWord.TOK_EQUAL) {
 			Noeud N2 = comparaison(getNextToken());
 			if (N2 == null)
-				throw new Exception("Y a rien après le == wesh");
+				throw new AnalyserSyntaxiqueException("Y a rien après le == wesh", t1);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
@@ -144,7 +150,7 @@ public class AnalyserSyntaxique {
 		}else if (t1.getCategorie() == KeyWord.TOK_DIFF) {
 			Noeud N2 = comparaison(getNextToken());
 			if (N2 == null)
-				throw new Exception("Y a rien après le != wesh");
+				throw new AnalyserSyntaxiqueException("Y a rien après le != wesh", t1);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
@@ -152,7 +158,7 @@ public class AnalyserSyntaxique {
 		}else if (t1.getCategorie() == KeyWord.TOK_SUP) {
 			Noeud N2 = comparaison(getNextToken());
 			if (N2 == null)
-				throw new Exception("Y a rien après le > wesh");
+				throw new AnalyserSyntaxiqueException("Y a rien après le > wesh", t1);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
@@ -160,7 +166,7 @@ public class AnalyserSyntaxique {
 		}else if (t1.getCategorie() == KeyWord.TOK_SUPEQUAL) {
 			Noeud N2 = comparaison(getNextToken());
 			if (N2 == null)
-				throw new Exception("Y a rien après le >= wesh");
+				throw new AnalyserSyntaxiqueException("Y a rien après le >= wesh", t1);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
@@ -168,7 +174,7 @@ public class AnalyserSyntaxique {
 		}else if (t1.getCategorie() == KeyWord.TOK_INF) {
 			Noeud N2 = comparaison(getNextToken());
 			if (N2 == null)
-				throw new Exception("Y a rien après le < wesh");
+				throw new AnalyserSyntaxiqueException("Y a rien après le < wesh", t1);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
@@ -176,7 +182,7 @@ public class AnalyserSyntaxique {
 		}else if (t1.getCategorie() == KeyWord.TOK_INFEQUAL) {
 			Noeud N2 = comparaison(getNextToken());
 			if (N2 == null)
-				throw new Exception("Y a rien après le <= wesh");
+				throw new AnalyserSyntaxiqueException("Y a rien après le <= wesh", t1);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
@@ -187,7 +193,9 @@ public class AnalyserSyntaxique {
 	}
 
 	//L -> &&
-	public Noeud logique(Token t) throws Exception {
+	public Noeud logique(Token t) throws AnalyserSyntaxiqueException {
+		if (t==null)
+			return null;
 		Noeud N = comparaison(t);
 		if (N == null) {
 			return null;
@@ -198,7 +206,7 @@ public class AnalyserSyntaxique {
 		if (t1.getCategorie() == KeyWord.TOK_ET) {
 			Noeud N2 = logique(getNextToken());
 			if (N2 == null)
-				throw new Exception("Y a rien après le et wesh");
+				throw new AnalyserSyntaxiqueException("Y a rien après le et wesh", t1);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
@@ -208,7 +216,9 @@ public class AnalyserSyntaxique {
 		return N;
 	}
 
-	public Noeud expression(Token t) throws Exception {
+	public Noeud expression(Token t) throws AnalyserSyntaxiqueException {
+		if (t==null)
+			return null;
 		Noeud N = logique(t);
 		if (N == null) {
 			return null;
@@ -219,7 +229,7 @@ public class AnalyserSyntaxique {
 		if (t1.getCategorie() == KeyWord.TOK_OU) {
 			Noeud N2 = expression(getNextToken());
 			if (N2 == null)
-				throw new Exception("Y a rien après le ou wesh");
+				throw new AnalyserSyntaxiqueException("Y a rien après le ou wesh", t1);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
 			enfants.add(N2);
@@ -229,14 +239,16 @@ public class AnalyserSyntaxique {
 		return N;
 	}
 
-	public Noeud affectation(Token t) throws Exception {
+	public Noeud affectation(Token t) throws AnalyserSyntaxiqueException {
+		if (t==null)
+			return null;
 		if (t.categorie == KeyWord.TOK_ID){
-			t = getNextToken();
-			if (t.categorie == KeyWord.TOK_AFF){
+			Token t1 = getNextToken();
+			if (t1!=null && t1.categorie == KeyWord.TOK_AFF){
 
 				Noeud N = expression(getNextToken());
 				if (N == null) {
-					throw  new Exception("Problème : affectation sans valeur!");
+					throw  new AnalyserSyntaxiqueException("Problème : affectation sans valeur!", t);
 				}
 				List<Noeud> enfants = new ArrayList<Noeud>();
 				enfants.add(N);
@@ -251,19 +263,23 @@ public class AnalyserSyntaxique {
 	}
 
 
-	public Noeud statement(Token t) throws Exception {
+	public Noeud statement(Token t) throws AnalyserSyntaxiqueException {
 		//'{'S*'}'
+		if (t==null)
+		{
+			return null;
+		}
 		if (t.categorie == KeyWord.TOK_ACCOLADE_O){
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			Noeud N;
-			t=getNextToken();
-			while((N = statement(t))!=null)
+			Token t1=getNextToken();
+			while((N = statement(t1))!=null)
 			{
 				enfants.add(N);
-				t=getNextToken();
+				t1=getNextToken();
 			}
-			if ( ! (t.categorie == KeyWord.TOK_ACCOLADE_F)){
-				throw new Exception("Problème : pas de '}'");
+			if (t1==null || !(t1.categorie == KeyWord.TOK_ACCOLADE_F)){
+				throw new AnalyserSyntaxiqueException("Problème : pas de '}'", t);
 			}
 			else
 			{
@@ -273,64 +289,67 @@ public class AnalyserSyntaxique {
 		//A';' | E ';'
 		Noeud N = affectation(t);
 		if (N != null || (N = expression(t)) != null){
-			t = getNextToken();
-			if (t.categorie == KeyWord.TOK_PV){
+			Token t1 = getNextToken();
+			if (t1!=null && t1.categorie == KeyWord.TOK_PV){
 				return N;
 			}else {
-				throw new Exception("Problème : omission de ';' ");
+				throw new AnalyserSyntaxiqueException("Problème : omission de ';' ", t);
 			}
 		}
 
 		//if '('E')' S ('else' S)?
 		if (t.categorie == KeyWord.TOK_IF){
-			t = getNextToken();
-			if (t.categorie == KeyWord.TOK_PARENTHESE_O){
+			Token t1 = getNextToken();
+			if (t1!=null && t1.categorie == KeyWord.TOK_PARENTHESE_O){
 				List<Noeud> enfants = new ArrayList<Noeud>();
 				Noeud E = expression(getNextToken());
 				if (E == null){
-					throw new Exception("Problème : omission de la condition du if");
+					throw new AnalyserSyntaxiqueException("Problème : omission de la condition du if", t);
 				}
-				t = getNextToken();
-				if (t.categorie == KeyWord.TOK_PARENTHESE_F){
+				t1 = getNextToken();
+				if (t1!=null && t1.categorie == KeyWord.TOK_PARENTHESE_F){
 					Noeud S1 = statement(getNextToken());
 					if (S1 == null){
-						throw new Exception("Problème : omission du statement du if");
+						throw new AnalyserSyntaxiqueException("Problème : omission du statement du if", t);
 					}
 					enfants.add(E);
 					enfants.add(S1);
-					if (t.categorie == KeyWord.TOK_ELSE){
+					t1 = getNextToken();
+					if (t1!=null && t1.categorie == KeyWord.TOK_ELSE){
 						Noeud S2 = statement(getNextToken());
 						if (S2 == null){
-							throw new Exception("Problème : omission du statement du else");
+							throw new AnalyserSyntaxiqueException("Problème : omission du statement du else", t);
 						}
 						enfants.add(S2);
 					}
+					else 
+						undo();
 					return new Noeud(NoeudType.ND_IF, enfants);
 				}else {
-					throw new Exception("Problème : omission parenthèse fermante");
+					throw new AnalyserSyntaxiqueException("Problème : omission parenthèse fermante", t);
 				}
 			}
 			else {
-				throw new Exception("Problème : omission parenthèse ouvrante");
+				throw new AnalyserSyntaxiqueException("Problème : omission parenthèse ouvrante", t);
 
 			}
 
 		}
 		//while '(' E ')' S
 		if (t.categorie == KeyWord.TOK_WHILE){
-			t = getNextToken();
-			if (t.categorie == KeyWord.TOK_PARENTHESE_O){
+			Token t1 = getNextToken();
+			if (t1!=null && t1.categorie == KeyWord.TOK_PARENTHESE_O){
 				List<Noeud> enfantsLoop = new ArrayList<Noeud>();
 				List<Noeud> enfantsIf = new ArrayList<Noeud>();
 				Noeud E = expression(getNextToken());
 				if (E == null){
-					throw new Exception("Problème : omission de la condition du while");
+					throw new AnalyserSyntaxiqueException("Problème : omission de la condition du while", t);
 				}
-				t = getNextToken();
-				if (t.categorie == KeyWord.TOK_PARENTHESE_F){
+				t1 = getNextToken();
+				if (t1!=null && t1.categorie == KeyWord.TOK_PARENTHESE_F){
 					Noeud S = statement(getNextToken());
 					if (S == null){
-						throw new Exception("Problème : omission du statement du while");
+						throw new AnalyserSyntaxiqueException("Problème : omission du statement du while", t);
 					}
 					enfantsIf.add(E);
 					enfantsIf.add(S);
@@ -339,11 +358,11 @@ public class AnalyserSyntaxique {
 					enfantsLoop.add(If);
 					return new Noeud(NoeudType.ND_LOOP, enfantsLoop); //noeud loop
 				}else {
-					throw new Exception("Problème : omission parenthèse fermante");
+					throw new AnalyserSyntaxiqueException("Problème : omission parenthèse fermante", t);
 				}
 			}
 			else {
-				throw new Exception("Problème : omission parenthèse ouvrante");
+				throw new AnalyserSyntaxiqueException("Problème : omission parenthèse ouvrante", t);
 
 			}
 
@@ -354,21 +373,21 @@ public class AnalyserSyntaxique {
 		if (t.categorie == KeyWord.TOK_DO) {
 			Noeud S = statement(getNextToken());
 			if (S == null) {
-				throw new Exception("Problème : omission du statement du do");
+				throw new AnalyserSyntaxiqueException("Problème : omission du statement du do", t);
 			}
-			t = getNextToken();
-			if (t.categorie == KeyWord.TOK_WHILE) {
-				t = getNextToken();
-				if (t.categorie == KeyWord.TOK_PARENTHESE_O) {
+			Token t1 = getNextToken();
+			if (t1!=null && t1.categorie == KeyWord.TOK_WHILE) {
+				t1 = getNextToken();
+				if (t1!=null && t1.categorie == KeyWord.TOK_PARENTHESE_O) {
 					List<Noeud> enfantsLoop = new ArrayList<Noeud>();
 					List<Noeud> enfantsBlock = new ArrayList<Noeud>();
 					List<Noeud> enfantsIf = new ArrayList<Noeud>();
 					Noeud E = expression(getNextToken());
 					if (E == null) {
-						throw new Exception("Problème : omission de la condition du while");
+						throw new AnalyserSyntaxiqueException("Problème : omission de la condition du while", t);
 					}
-					t = getNextToken();
-					if (t.categorie == KeyWord.TOK_PARENTHESE_F) {
+					t1 = getNextToken();
+					if (t1!=null && t1.categorie == KeyWord.TOK_PARENTHESE_F) {
 						//enfants du if
 						enfantsIf.add(E);
 						enfantsIf.add(new Noeud(NoeudType.ND_CONTINUE));
@@ -385,10 +404,10 @@ public class AnalyserSyntaxique {
 
 						return new Noeud(NoeudType.ND_LOOP, enfantsLoop); //noeud loop
 					} else {
-						throw new Exception("Problème : omission parenthèse fermante");
+						throw new AnalyserSyntaxiqueException("Problème : omission parenthèse fermante", t);
 					}
 				} else {
-					throw new Exception("Problème : omission parenthèse ouvrante");
+					throw new AnalyserSyntaxiqueException("Problème : omission parenthèse ouvrante", t);
 
 				}
 
@@ -397,29 +416,29 @@ public class AnalyserSyntaxique {
 
 		//for(A1, E, A2)S
 		if (t.categorie == KeyWord.TOK_FOR){
-			t = getNextToken();
-			if (t.categorie == KeyWord.TOK_PARENTHESE_O) {
+			Token t1 = getNextToken();
+			if (t1!=null && t1.categorie == KeyWord.TOK_PARENTHESE_O) {
 				Noeud A1 = statement(getNextToken());
 				if (A1 == null) {
-					throw new Exception("Problème : omission de l'initialisation dans le for");
+					throw new AnalyserSyntaxiqueException("Problème : omission de l'initialisation dans le for", t);
 				}
-				t = getNextToken();
-				if (t.categorie == KeyWord.TOK_VIRGULE) {
+				t1 = getNextToken();
+				if (t1!=null && t1.categorie == KeyWord.TOK_VIRGULE) {
 					Noeud E = expression(getNextToken());
 					if (E == null) {
-						throw new Exception("Problème : omission de la condition d'arrêt dans le for");
+						throw new AnalyserSyntaxiqueException("Problème : omission de la condition d'arrêt dans le for", t);
 					}
-					t = getNextToken();
-					if (t.categorie == KeyWord.TOK_VIRGULE) {
+					t1 = getNextToken();
+					if (t1!=null && t1.categorie == KeyWord.TOK_VIRGULE) {
 						Noeud A2 = statement(getNextToken());
 						if (A2 == null) {
-							throw new Exception("Problème : omission de l'incrémentation dans le for");
+							throw new AnalyserSyntaxiqueException("Problème : omission de l'incrémentation dans le for", t);
 						}
-						t = getNextToken();
-						if (t.categorie == KeyWord.TOK_PARENTHESE_O) {
+						t1 = getNextToken();
+						if (t1!=null && t1.categorie == KeyWord.TOK_PARENTHESE_F) {
 							Noeud S = statement(getNextToken());
 							if (S == null) {
-								throw new Exception("Problème : omission du statement du for");
+								throw new AnalyserSyntaxiqueException("Problème : omission du statement du for", t);
 							}
 							List<Noeud> enfantsBlock = new ArrayList<Noeud>();
 							List<Noeud> enfantsLoop = new ArrayList<Noeud>();
@@ -444,42 +463,42 @@ public class AnalyserSyntaxique {
 
 							return new Noeud(NoeudType.ND_BLOCK, enfantsLoop); //noeud block
 						}else {
-							throw new Exception("Problème : omission ')' après l'incrémentation dans le for");
+							throw new AnalyserSyntaxiqueException("Problème : omission ')' après l'incrémentation dans le for", t);
 
 						}
 
 					}else {
-						throw new Exception("Problème : omission ',' après la condition d'arrêt dans le for");
+						throw new AnalyserSyntaxiqueException("Problème : omission ',' après la condition d'arrêt dans le for", t);
 
 					}
 
 				}else {
-					throw new Exception("Problème : omission ',' après initialisation dans le for");
+					throw new AnalyserSyntaxiqueException("Problème : omission ',' après initialisation dans le for", t);
 
 				}
 			}else {
-				throw new Exception("Problème : omission parenthèse ouvrante");
+				throw new AnalyserSyntaxiqueException("Problème : omission parenthèse ouvrante", t);
 
 			}
 		}
 
 		//break ;
 		if (t.categorie == KeyWord.TOK_BREAK){
-			t = getNextToken();
-			if (t.categorie == KeyWord.TOK_PV){
+			Token t1 = getNextToken();
+			if (t1!=null &&  t1.categorie == KeyWord.TOK_PV){
 				return new Noeud(NoeudType.ND_BREAK);
 			}else {
-				throw new Exception("Problème : omission de ';' après break");
+				throw new AnalyserSyntaxiqueException("Problème : omission de ';' après break", t);
 			}
 		}
 
 		//continue;
 		if (t.categorie == KeyWord.TOK_CONTINUE){
-			t = getNextToken();
-			if (t.categorie == KeyWord.TOK_PV){
+			Token t1 = getNextToken();
+			if (t1!=null && t1.categorie == KeyWord.TOK_PV){
 				return new Noeud(NoeudType.ND_CONTINUE);
 			}else {
-				throw new Exception("Problème : omission de ';' après continue");
+				throw new AnalyserSyntaxiqueException("Problème : omission de ';' après continue", t);
 			}
 		}
 
@@ -487,21 +506,30 @@ public class AnalyserSyntaxique {
 		if (t.categorie == KeyWord.TOK_OUT){
 			Noeud E = expression(getNextToken());
 			if (E == null){
-				throw new Exception("Problème : omission de l'expression après le out");
+				throw new AnalyserSyntaxiqueException("Problème : omission de l'expression après le out", t);
 			}
-			t = getNextToken();
-			if (t.categorie == KeyWord.TOK_PV){
+			Token t1 = getNextToken();
+			if (t1!=null && t1.categorie == KeyWord.TOK_PV){
 				List<Noeud> enfants = new ArrayList<Noeud>();
 				enfants.add(E);
 				return new Noeud(NoeudType.ND_OUT, enfants);
 			}else {
-				throw new Exception("Problème : omission de ';' du out");
+				throw new AnalyserSyntaxiqueException("Problème : omission de ';' du out", t);
 			}
 		}
 
 
 		return null;
 	}
+	
+	public Noeud definition(Token t) throws Exception {
+		return null;
+	}
+
+	public Noeud master(Token t) throws Exception {
+		return null;
+	}
+	
 
 
 
@@ -565,26 +593,26 @@ public class AnalyserSyntaxique {
 		this.tokenList = tokenList;
 	}
 
-	public static void main(String[] args) throws Exception {
-		List <Token> listToken = new ArrayList<Token>();
-		listToken.add(new Token(KeyWord.TOK_MOINS, 0, 0));
-		listToken.add(new Token(3, 1, 0));
-		listToken.add(new Token(KeyWord.TOK_ADD, 1, 0));
-		listToken.add(new Token(3, 1, 0));
-
-		listToken.add(new Token(KeyWord.TOK_DIV, 1, 0));
-		listToken.add(new Token(3, 1, 0));
-
-		listToken.add(new Token(KeyWord.TOK_OU, 1, 0));
-		listToken.add(new Token(5, 1, 0));
-
-
-		AnalyserSyntaxique a = new AnalyserSyntaxique(listToken);
-		Noeud n = a.expression(a.getNextToken());
-		n.print();
-		a.afficher(n);
-		
-	}
+//	public static void main(String[] args) throws AnalyserSyntaxiqueException {
+//		List <Token> listToken = new ArrayList<Token>();
+//		listToken.add(new Token(KeyWord.TOK_MOINS, 0, 0));
+//		listToken.add(new Token(3, 1, 0));
+//		listToken.add(new Token(KeyWord.TOK_ADD, 1, 0));
+//		listToken.add(new Token(3, 1, 0));
+//
+//		listToken.add(new Token(KeyWord.TOK_DIV, 1, 0));
+//		listToken.add(new Token(3, 1, 0));
+//
+//		listToken.add(new Token(KeyWord.TOK_OU, 1, 0));
+//		listToken.add(new Token(5, 1, 0));
+//
+//
+//		AnalyserSyntaxique a = new AnalyserSyntaxique(listToken);
+//		Noeud n = a.expression(a.getNextToken());
+//		n.print();
+//		//a.afficher(n);
+//		
+//	}
 	
 
 }
