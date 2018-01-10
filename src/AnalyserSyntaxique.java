@@ -288,14 +288,28 @@ public class AnalyserSyntaxique {
 		}
 		//A';' | E ';'
 		Noeud N = affectation(t);
-		if (N != null || (N = expression(t)) != null){
+		if (N != null ){
 			Token t1 = getNextToken();
 			if (t1!=null && t1.categorie == KeyWord.TOK_PV){
 				return N;
 			}else {
 				throw new AnalyserSyntaxiqueException("Problème : omission de ';' ", t);
 			}
+		}else {
+			N = expression(t);
+			if (N != null) {
+				Token t1 = getNextToken();
+				if (t1 != null && t1.categorie == KeyWord.TOK_PV) {
+					List<Noeud> enfants = new ArrayList<Noeud>();
+					enfants.add(N);
+					return new Noeud(NoeudType.ND_DROP, enfants);
+				} else {
+					throw new AnalyserSyntaxiqueException("Problème : omission de ';' ", t);
+				}
+			}
 		}
+
+
 
 		//if '('E')' S ('else' S)?
 		if (t.categorie == KeyWord.TOK_IF){
@@ -518,6 +532,32 @@ public class AnalyserSyntaxique {
 			}
 		}
 
+		//return E;
+		if (t.categorie == KeyWord.TOK_RETURN){
+			Noeud E = expression(getNextToken());
+			if (E == null){
+				throw new AnalyserSyntaxiqueException("Problème : omission de l'expression après le return", t);
+			}
+			Token t1 = getNextToken();
+			if (t1!=null && t1.categorie == KeyWord.TOK_PV){
+				List<Noeud> enfants = new ArrayList<Noeud>();
+				enfants.add(E);
+				return new Noeud(NoeudType.ND_RETURN, enfants);
+			}else {
+				throw new AnalyserSyntaxiqueException("Problème : omission de ';' du return", t);
+			}
+		}
+
+		//
+		if (t.categorie == KeyWord.TOK_INT) {
+			Token t1 = getNextToken();
+			if (t1 != null && t1.categorie == KeyWord.TOK_ID) {
+				t1 = getNextToken();
+				if (t1 != null && t1.categorie == KeyWord.TOK_PV) {
+					return new Noeud(NoeudType.ND_VARDECL, t);
+				}
+			}
+		}
 
 		return null;
 	}
@@ -531,18 +571,21 @@ public class AnalyserSyntaxique {
 		if (t.categorie == KeyWord.TOK_INT) {
 			Token t1 = getNextToken();
 			if (t1 != null && t1.categorie == KeyWord.TOK_ID) {
+				List<String> args = new ArrayList<>();
 				t1 = getNextToken();
-				if (t1 != null && t1.categorie == KeyWord.TOK_PARENTHESE_O) {
+				if (t1 != null && t1.categorie == KeyWord.TOK_PARENTHESE_O) { //si fonction avec paramètres
 					t1 = getNextToken();
 					if (t1 != null && t1.categorie == KeyWord.TOK_INT) {
 						t1 = getNextToken();
 						if (t1 != null && t1.categorie == KeyWord.TOK_ID) {
+							args.add(t1.getIdentifiant());
 							t1 = getNextToken();
 							while (t1 != null && t1.categorie == KeyWord.TOK_VIRGULE) {
 								t1 = getNextToken();
 								if (t1 != null && t1.categorie == KeyWord.TOK_INT) {
 									t1 = getNextToken();
 									if (t1 != null && t1.categorie == KeyWord.TOK_ID) {
+										args.add(t1.getIdentifiant());
 										t1 = getNextToken();
 									}
 									else throw new AnalyserSyntaxiqueException("id manquant", t);
@@ -558,7 +601,9 @@ public class AnalyserSyntaxique {
 							throw new AnalyserSyntaxiqueException("Y a rien après la signature wesh' ", t1);
 						List<Noeud> enfants = new ArrayList<Noeud>();
 						enfants.add(S);
-						return new Noeud(NoeudType.ND_DEFFONCTION, enfants);
+						Noeud N = new Noeud(NoeudType.ND_DEFFONCTION, enfants);
+						N.setArgs(args);
+						return N;
 					}
 					else throw new AnalyserSyntaxiqueException("Oublie de la parenthèse fermante", t);
 				}
@@ -587,9 +632,6 @@ public class AnalyserSyntaxique {
 
 		return new Noeud(NoeudType.ND_MASTER, enfants);
 	}
-	
-
-
 
 	public Token getNextToken(){
 		if (compteur<tokenList.size())

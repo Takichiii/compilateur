@@ -1,4 +1,3 @@
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -133,7 +132,7 @@ public class AnalyserLexical {
 			}
 		}
 
-		throw new Exception("Unknown Char : " + String.valueOf(c)+ Character.getType(c) + " !!");
+		throw new Exception("Unknown Char : " + String.valueOf(c) );//+ Character.getType(c));
 	}
 	
 	/*

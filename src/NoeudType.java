@@ -40,7 +40,7 @@ public enum NoeudType {
 	ND_CALL("call"),
 	ND_RETURN("return"),
 	ND_MASTER("Z"),
-	ND_OUT("out");//TODO à quoi ça sert
+	ND_OUT("out"), ND_DROP("drop");
 
 	public String valeur;
 	private NoeudType(String valeur){

@@ -6,6 +6,7 @@ public class Noeud {
 	private NoeudType type;
 	private int slot;
 	private int valeur;
+	private String identifiant;
 	private Token token;
 	private List<Noeud> enfants;
 	private List<String> args;
@@ -96,5 +97,9 @@ public class Noeud {
 	public void setArgs(List<String> args) {
 		this.args = args;
 	}
+	public void setIdentifiant(String identifiant) {
+		this.identifiant = identifiant;
+	}
+
 
 }
