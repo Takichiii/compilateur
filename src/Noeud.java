@@ -8,25 +8,30 @@ public class Noeud {
 	private int valeur;
 	private Token token;
 	private List<Noeud> enfants;
+	private List<String> args;
 
 	public Noeud(NoeudType type, int valeur){
 		this.type = type;
 		this.valeur = valeur;
 		this.enfants = new ArrayList<>();
+		this.args = new ArrayList<>();
 	}
 	public Noeud(NoeudType type, Token token){
 		this.type = type;
 		this.token = token;
 		this.enfants = new ArrayList<>();
+		this.args = new ArrayList<>();
 	}
 	public Noeud(NoeudType type, List<Noeud> enfants){
 		this.type = type;
 		this.enfants = enfants;
+		this.args = new ArrayList<>();
 	}
 
 	public Noeud(NoeudType type){ //pour noeuds sans enfants ex break
 		this.type = type;
 		this.enfants = new ArrayList<>();
+		this.args = new ArrayList<>();
 	}
 
 	public void print() {
@@ -85,6 +90,11 @@ public class Noeud {
 	public void setSlot(int slot) {
 		this.slot = slot;
 	}
-
+	public List<String> getArgs() {
+		return args;
+	}
+	public void setArgs(List<String> args) {
+		this.args = args;
+	}
 
 }

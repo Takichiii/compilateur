@@ -39,5 +39,12 @@ public class AnalyserSemantique {
 			n.setSlot(s.slot);
 			
 		}
+		// check boucle
+		// si pas boucle alors break et continue impossible
+		
+		//fonction
+		//check table symbol
+		// check table symbol pour chaque param 
+		
 	}
 }
