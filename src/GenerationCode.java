@@ -60,10 +60,10 @@ public class GenerationCode {
             int L1 = genLabel();
             int L2 = genLabel();
             sb.append(gencode(N.getEnfants().get(0))); //gencode(E)
-            sb.append("jumpf" + L1);
+            sb.append("jumpf" + L1 +"\n");
             sb.append(gencode(N.getEnfants().get(1))); //gencode(S1)
-            sb.append("jump" + L2);
-            sb.append("." + L1);
+            sb.append("jump" + L2 +"\n");
+            sb.append("." + L1 +"\n");
             if (N.getEnfants().size() == 3) //s'il y a un else
                 sb.append(gencode(N.getEnfants().get(2))); //gencode(S2)
             sb.append("." + L2);
@@ -75,31 +75,34 @@ public class GenerationCode {
             stack.push(L2);
             L1 = genLabel();
             L2 = genLabel();
-            sb.append("." + L1);
+            sb.append("." + L1 +"\n");
             sb.append(gencode(N.getEnfants().get(0)));
-            sb.append("jump" + L1);
-            sb.append("." + L2);
+            sb.append("jump" + L1 +"\n");
+            sb.append("." + L2 +"\n");
             L2 = stack.pop();
             L1 = stack.pop();
         }
 
         //BLOCK
         else if (N.getType() == NoeudType.ND_BLOCK) {
-            sb.append(gencode(N.getEnfants().get(0)));
-            sb.append(gencode(N.getEnfants().get(1)));
+            List<Noeud> enfants = N.getEnfants();
+            for (int i = 0; i < enfants.size(); i++) {
+                sb.append(gencode(enfants.get(i)));
+            }
         }
-        //BREAK CONTINUE
-        else if (N.getType() == NoeudType.ND_BREAK || N.getType() == NoeudType.ND_CONTINUE) {
-            sb.append("." + L1);
-            sb.append(gencode(N.getEnfants().get(0)));
-            sb.append("jump" + L1);
-            sb.append("." + L2);
+        //BREAK
+        else if (N.getType() == NoeudType.ND_BREAK) {
+            sb.append("jump" + L2);
+        }
 
+        //CONTINUE
+        else if (N.getType() == NoeudType.ND_CONTINUE) {
+            sb.append("jump" + L1);
         }
 
         //CALL
         else if (N.getType() == NoeudType.ND_CALL) {
-            sb.append("prep" + N.getIdentifiant());
+            sb.append("prep" + N.getIdentifiant() + "\n");
             List<Noeud> enfants = N.getEnfants();
             for (int i = 0; i < enfants.size(); i++) {
                 sb.append(gencode(enfants.get(i)));
@@ -135,14 +138,13 @@ public class GenerationCode {
 
         //DEFFonction
         else if (N.getType() == NoeudType.ND_DEFFONCTION) {
-            sb.append("." + N.getIdentifiant());
-            List<String> varLocales = N.getArgs();//TODO var locales ?
-            for (int i = 0; i < varLocales.size(); i++) {
-                sb.append("push.i 9999" + varLocales.get(i) + "\n");
+            sb.append("." + N.getIdentifiant() + "\n");
+            for (int i = 0; i < N.getNbVarLocale(); i++) {
+                sb.append("push.i 9999 \n");
             }
             sb.append(gencode(N.getEnfants().get(0)));
             sb.append("push.i 0 \n");
-            sb.append("ret\n");
+            sb.append("ret");
         }
 
 

@@ -30,8 +30,8 @@ public class AnalyserLexical {
 		{
 			charList.add((char)r);
 		}
-		for (char c : charList)
-			System.out.println(c);
+		//for (char c : charList)
+			//System.out.println(c);
 	}
 
 	public List<Token> getAllTokens() throws Exception
@@ -53,7 +53,7 @@ public class AnalyserLexical {
 		}
 		
 		char c = charList.get(compteur);
-		System.out.println("char : "+ c);
+		//System.out.println("char : "+ c);
 		
 		if (Character.isWhitespace(c) && c!=' ')
 		{ 
@@ -69,7 +69,7 @@ public class AnalyserLexical {
 		else if (Character.isWhitespace(c) && c==' '){
 			colonne++;
 			compteur++;
-			System.out.println("whitespace");
+			//System.out.println("whitespace");
 			return getNextToken();
 		}
 		else if (Character.isLetter(c)){
