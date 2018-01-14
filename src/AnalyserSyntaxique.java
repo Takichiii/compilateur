@@ -57,18 +57,31 @@ public class AnalyserSyntaxique {
 				throw  new AnalyserSyntaxiqueException("Problème : pas de valeur après le moins unitaire!", t);
 			List<Noeud> enfants = new ArrayList<Noeud>();
 			enfants.add(N);
-			return new Noeud(NoeudType.ND_MOINSU, enfants);
+			return new Noeud(NoeudType.ND_MOINSU, enfants, t);
+		}
+		if (t.categorie == KeyWord.TOK_NOT){
+			Noeud N = primaire(getNextToken());
+			if (N == null)
+				throw  new AnalyserSyntaxiqueException("Problème : pas de valeur après le '!' !", t);
+			List<Noeud> enfants = new ArrayList<Noeud>();
+			enfants.add(N);
+			return new Noeud(NoeudType.ND_NOT, enfants, t);
 		}
 
 		if (t.categorie == KeyWord.TOK_PARENTHESE_O) {
 			Token t1 = getNextToken();
 			Noeud N = expression(t1);
-				t1 = getNextToken();
-				if (t1.getCategorie() == KeyWord.TOK_PARENTHESE_F) {
-					return N;
-				}
+			if (N==null)
+			{
+				throw new AnalyserSyntaxiqueException("Il manqe une expression entre les parenthèses", t1);
 			}
-
+			t1 = getNextToken();
+			if (t1.getCategorie() == KeyWord.TOK_PARENTHESE_F) {
+				return N;
+			}
+			else
+				throw new AnalyserSyntaxiqueException("Oublie de la parenthèse gauche!", t1);
+		}
 		return null;
 	}
 
@@ -448,80 +461,80 @@ public class AnalyserSyntaxique {
 		}
 
 		//for(A1, E, A2)S
-		if (t.categorie == KeyWord.TOK_FOR){
-			Token t1 = getNextToken();
-			if (t1!=null && t1.categorie == KeyWord.TOK_PARENTHESE_O) {
-				t1 = getNextToken();
-				Noeud A1 = affectation(t1);
-				if (A1 == null) {
-					throw new AnalyserSyntaxiqueException("Problème : omission de l'initialisation dans le for", t);
-				}
-				t1 = getNextToken();
-				if (t1!=null && t1.categorie == KeyWord.TOK_PV) {
-					t1 = getNextToken();
-					Noeud E = expression(t1);
-					if (E == null) {
-						throw new AnalyserSyntaxiqueException("Problème : omission de la condition d'arrêt dans le for", t);
-					}
-					t1 = getNextToken();
-					if (t1!=null && t1.categorie == KeyWord.TOK_PV) {
+				if (t.categorie == KeyWord.TOK_FOR){
+					Token t1 = getNextToken();
+					if (t1!=null && t1.categorie == KeyWord.TOK_PARENTHESE_O) {
 						t1 = getNextToken();
-						Noeud A2 = affectation(t1);
-						if (A2 == null) {
-							throw new AnalyserSyntaxiqueException("Problème : omission de l'incrémentation dans le for", t);
+						Noeud A1 = affectation(t1);
+						if (A1 == null) {
+							throw new AnalyserSyntaxiqueException("Problème : omission de l'initialisation dans le for", t);
 						}
 						t1 = getNextToken();
-						if (t1!=null && t1.categorie == KeyWord.TOK_PARENTHESE_F) {
-							Noeud S = statement(getNextToken());
-							if (S == null) {
-								throw new AnalyserSyntaxiqueException("Problème : omission du statement du for", t);
+						if (t1!=null && t1.categorie == KeyWord.TOK_PV) {
+							t1 = getNextToken();
+							Noeud E = expression(t1);
+							if (E == null) {
+								throw new AnalyserSyntaxiqueException("Problème : omission de la condition d'arrêt dans le for", t);
 							}
-							List<Noeud> enfantsBlock = new ArrayList<Noeud>();
-							List<Noeud> enfantsBlockIf = new ArrayList<Noeud>();
-							List<Noeud> enfantsLoop = new ArrayList<Noeud>();
-							List<Noeud> enfantsIf = new ArrayList<Noeud>();
+							t1 = getNextToken();
+							if (t1!=null && t1.categorie == KeyWord.TOK_PV) {
+								t1 = getNextToken();
+								Noeud A2 = affectation(t1);
+								if (A2 == null) {
+									throw new AnalyserSyntaxiqueException("Problème : omission de l'incrémentation dans le for", t);
+								}
+								t1 = getNextToken();
+								if (t1!=null && t1.categorie == KeyWord.TOK_PARENTHESE_F) {
+									Noeud S = statement(getNextToken());
+									if (S == null) {
+										throw new AnalyserSyntaxiqueException("Problème : omission du statement du for", t);
+									}
+									List<Noeud> enfantsBlock = new ArrayList<Noeud>();
+									List<Noeud> enfantsBlockIf = new ArrayList<Noeud>();
+									List<Noeud> enfantsLoop = new ArrayList<Noeud>();
+									List<Noeud> enfantsIf = new ArrayList<Noeud>();
 
-							//enfants block du if
-							enfantsBlockIf.add(S);
-							enfantsBlockIf.add(A2);
-							Noeud blockIf = new Noeud(NoeudType.ND_BLOCK, enfantsBlockIf);//crée noeud block
+									//enfants block du if
+									enfantsBlockIf.add(S);
+									enfantsBlockIf.add(A2);
+									Noeud blockIf = new Noeud(NoeudType.ND_BLOCK, enfantsBlockIf);//crée noeud block
 
-							//enfants if
-							enfantsIf.add(E);
-							enfantsIf.add(blockIf);
-							enfantsIf.add(new Noeud(NoeudType.ND_BREAK,t1));
-							Noeud If = new Noeud(NoeudType.ND_IF, enfantsIf);//crée noeud if
+									//enfants if
+									enfantsIf.add(E);
+									enfantsIf.add(blockIf);
+									enfantsIf.add(new Noeud(NoeudType.ND_BREAK,t1));
+									Noeud If = new Noeud(NoeudType.ND_IF, enfantsIf);//crée noeud if
 
 
-							//enfants loop
-							enfantsLoop.add(If);
-							Noeud loop = new Noeud(NoeudType.ND_LOOP, enfantsLoop);//crée noeud loop
+									//enfants loop
+									enfantsLoop.add(If);
+									Noeud loop = new Noeud(NoeudType.ND_LOOP, enfantsLoop);//crée noeud loop
 
-							//enfants block global
-							enfantsBlock.add(A1);
-							enfantsBlock.add(loop);
-							Noeud block = new Noeud(NoeudType.ND_BLOCK, enfantsBlock);//crée noeud block
+									//enfants block global
+									enfantsBlock.add(A1);
+									enfantsBlock.add(loop);
+									Noeud block = new Noeud(NoeudType.ND_BLOCK, enfantsBlock);//crée noeud block
 
-							return block; //noeud block
+									return block; //noeud block
+								}else {
+									throw new AnalyserSyntaxiqueException("Problème : omission ')' après l'incrémentation dans le for", t);
+
+								}
+
+							}else {
+								throw new AnalyserSyntaxiqueException("Problème : omission ';' après la condition d'arrêt dans le for", t);
+
+							}
+
 						}else {
-							throw new AnalyserSyntaxiqueException("Problème : omission ')' après l'incrémentation dans le for", t);
+							throw new AnalyserSyntaxiqueException("Problème : omission de ';' après initialisation dans le for", t1);
 
 						}
-
 					}else {
-						throw new AnalyserSyntaxiqueException("Problème : omission ';' après la condition d'arrêt dans le for", t);
+						throw new AnalyserSyntaxiqueException("Problème : omission parenthèse ouvrante", t);
 
 					}
-
-				}else {
-					throw new AnalyserSyntaxiqueException("Problème : omission de ';' après initialisation dans le for", t1);
-
 				}
-			}else {
-				throw new AnalyserSyntaxiqueException("Problème : omission parenthèse ouvrante", t);
-
-			}
-		}
 
 		//break ;
 		if (t.categorie == KeyWord.TOK_BREAK){

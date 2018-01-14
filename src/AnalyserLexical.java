@@ -114,12 +114,41 @@ public class AnalyserLexical {
 		else{
 			StringBuilder sb = new StringBuilder();
 			sb.append(c);
-			
-			if (compteur+1<charList.size() && (Character.getType(charList.get(compteur+1))== Character.MATH_SYMBOL || Character.getType(charList.get(compteur+1))==24 ) && charList.get(compteur+1)!=';')
+			if (c=='&' && compteur+1<charList.size() && charList.get(compteur+1)=='&')
 			{
 				sb.append(charList.get(compteur+1));
 				compteur++;
 			}
+			else if (c=='|' && compteur+1<charList.size() && charList.get(compteur+1)=='|')
+			{
+				sb.append(charList.get(compteur+1));	
+				compteur++;
+			}
+			else if (c=='=' && compteur+1<charList.size() && charList.get(compteur+1)=='=')
+			{
+				sb.append(charList.get(compteur+1));
+				compteur++;
+			}
+			else if (c=='!' && compteur+1<charList.size() && charList.get(compteur+1)=='=')
+			{
+				sb.append(charList.get(compteur+1));
+				compteur++;
+			}
+			else if (c=='<' && compteur+1<charList.size() && charList.get(compteur+1)=='=')
+			{
+				sb.append(charList.get(compteur+1));
+				compteur++;
+			}
+			else if (c=='>' && compteur+1<charList.size() && charList.get(compteur+1)=='=')
+			{
+				sb.append(charList.get(compteur+1));
+				compteur++;
+			}
+//			if (compteur+1<charList.size() && (Character.getType(charList.get(compteur+1))== Character.MATH_SYMBOL || Character.getType(charList.get(compteur+1))==24 ) && charList.get(compteur+1)!=';' && charList.get(compteur+1)!='*')
+//			{
+//				sb.append(charList.get(compteur+1));
+//				compteur++;
+//			}
 				
 			for (KeyWord keyWord : KeyWord.values()) 
 			{				
@@ -134,65 +163,4 @@ public class AnalyserLexical {
 
 		throw new Exception("Unknown Char : " + String.valueOf(c) );//+ Character.getType(c));
 	}
-	
-	/*
-	public Token getNextToken() throws IOException{
-		boolean find = false;
-		while (!find)
-		{
-			int r = reader.read();
-			if (r==-1)
-				return null;
-			char c = (char)r;
-			if (Character.isWhitespace(c) && c=='\n')
-			{
-				ligne++;
-				colonne=0;
-			}
-			else if (Character.isWhitespace(c)){
-				colonne++;
-			}
-			else if (Character.isLetter(c)){
-				StringBuilder sb = new StringBuilder();
-				do{
-					sb.append(c);
-					colonne++;
-				}
-				while ((r = reader.read())!=-1 && (Character.isLetter((char)r) || Character.isDigit((char)r)) );
-				String id = sb.toString();
-				for (KeyWord keyWord : KeyWord.values()) 
-				{
-					if (id.equals(keyWord.valeur))
-					{
-						return new Token(id,keyWord,ligne, colonne);
-					}
-				}
-				return new Token(id,KeyWord.TOK_ID,ligne, colonne);
-			}
-			
-			else if (Character.isDigit(c)){
-				StringBuilder sb = new StringBuilder();
-				do{
-					sb.append(c);
-					colonne++;
-				}
-				while ((r = reader.read())!=-1 && Character.isDigit((char)r));
-				int valeur = Integer.valueOf(sb.toString());
-				return new Token(valeur,ligne, colonne);
-			}
-			
-			else{
-				for (KeyWord keyWord : KeyWord.values()) 
-				{
-					BufferedReader buff = new BufferedReader(reader);
-					
-					if (String.valueOf(c).equals(keyWord.valeur))
-					{
-						return new Token(id,keyWord,ligne, colonne);
-					}
-				}
-			}
-			colonne++;
-		}
-	}*/
 }
