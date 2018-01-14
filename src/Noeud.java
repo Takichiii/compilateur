@@ -16,6 +16,12 @@ public class Noeud {
 		this.enfants = new ArrayList<>();
 		this.args = new ArrayList<>();
 	}
+	public Noeud(NoeudType type, List<Noeud> enfants, Token token){
+		this.token=token;
+		this.type = type;
+		this.enfants = enfants;
+		this.args = new ArrayList<>();
+	}
 	public Noeud(NoeudType type, List<Noeud> enfants){
 		this.type = type;
 		this.enfants = enfants;

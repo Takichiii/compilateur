@@ -28,8 +28,8 @@ public class Main {
 		Noeud n;
 		try {
 			n = analyserSyntaxique.master(analyserSyntaxique.getNextToken());
+			n.print();
 			AnalyserSemantique analyserSemantique = new AnalyserSemantique(n);
- 			n.print();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

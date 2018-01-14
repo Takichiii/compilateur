@@ -33,6 +33,8 @@ public class AnalyserSemantique {
 		else if (n.getType()==NoeudType.ND_REFVAR || n.getType()==NoeudType.ND_AFFVAR)
 		{
 			Symbole s = sym.recherche(n.getToken());
+			if (s==null)
+				throw new AnalyserSemantiqueException("La varaible "+n.getIdentifiant()+" n'a pas été déclarée!", n.getToken());
 			n.setSlot(s.getSlot());
 		}
 		else if (n.getType()==NoeudType.ND_DEFFONCTION)

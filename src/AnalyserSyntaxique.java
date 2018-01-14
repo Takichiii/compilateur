@@ -258,7 +258,7 @@ public class AnalyserSyntaxique {
 				}
 				List<Noeud> enfants = new ArrayList<Noeud>();
 				enfants.add(N);
-				return new Noeud(NoeudType.ND_AFFVAR, enfants);
+				return new Noeud(NoeudType.ND_AFFVAR, enfants, t);
 
 			}
 			else {
@@ -373,7 +373,7 @@ public class AnalyserSyntaxique {
 					}
 					enfantsIf.add(E);
 					enfantsIf.add(S);
-					enfantsIf.add(new Noeud(NoeudType.ND_BREAK));
+					enfantsIf.add(new Noeud(NoeudType.ND_BREAK, t1));
 					Noeud If = new Noeud(NoeudType.ND_IF, enfantsIf);//noeud if
 					enfantsLoop.add(If);
 					return new Noeud(NoeudType.ND_LOOP, enfantsLoop); //noeud loop
@@ -410,8 +410,8 @@ public class AnalyserSyntaxique {
 					if (t1!=null && t1.categorie == KeyWord.TOK_PARENTHESE_F) {
 						//enfants du if
 						enfantsIf.add(E);
-						enfantsIf.add(new Noeud(NoeudType.ND_CONTINUE));
-						enfantsIf.add(new Noeud(NoeudType.ND_BREAK));
+						enfantsIf.add(new Noeud(NoeudType.ND_CONTINUE,t1));
+						enfantsIf.add(new Noeud(NoeudType.ND_BREAK,t1));
 						Noeud If = new Noeud(NoeudType.ND_IF, enfantsIf);//crée noeud if
 
 						//enfants du block
@@ -467,7 +467,7 @@ public class AnalyserSyntaxique {
 							//enfants if
 							enfantsIf.add(E);
 							enfantsIf.add(S);
-							enfantsIf.add(new Noeud(NoeudType.ND_BREAK));
+							enfantsIf.add(new Noeud(NoeudType.ND_BREAK,t1));
 							Noeud If = new Noeud(NoeudType.ND_IF, enfantsIf);//crée noeud if
 
 							//enfants loop
@@ -506,7 +506,7 @@ public class AnalyserSyntaxique {
 		if (t.categorie == KeyWord.TOK_BREAK){
 			Token t1 = getNextToken();
 			if (t1!=null &&  t1.categorie == KeyWord.TOK_PV){
-				return new Noeud(NoeudType.ND_BREAK);
+				return new Noeud(NoeudType.ND_BREAK, t1);
 			}else {
 				throw new AnalyserSyntaxiqueException("Problème : omission de ';' après break", t);
 			}
@@ -516,7 +516,7 @@ public class AnalyserSyntaxique {
 		if (t.categorie == KeyWord.TOK_CONTINUE){
 			Token t1 = getNextToken();
 			if (t1!=null && t1.categorie == KeyWord.TOK_PV){
-				return new Noeud(NoeudType.ND_CONTINUE);
+				return new Noeud(NoeudType.ND_CONTINUE,t1);
 			}else {
 				throw new AnalyserSyntaxiqueException("Problème : omission de ';' après continue", t);
 			}
@@ -556,11 +556,11 @@ public class AnalyserSyntaxique {
 
 		//
 		if (t.categorie == KeyWord.TOK_INT) {
-			Token t1 = getNextToken();
-			if (t1 != null && t1.categorie == KeyWord.TOK_ID) {
-				t1 = getNextToken();
+			Token idToken = getNextToken();
+			if (idToken != null && idToken.categorie == KeyWord.TOK_ID) {
+				Token t1 = getNextToken();
 				if (t1 != null && t1.categorie == KeyWord.TOK_PV) {
-					return new Noeud(NoeudType.ND_VARDECL, t);
+					return new Noeud(NoeudType.ND_VARDECL, idToken);
 				}
 			}
 		}
@@ -575,10 +575,10 @@ public class AnalyserSyntaxique {
 			return null;
 		}
 		if (t.categorie == KeyWord.TOK_INT) {
-			Token t1 = getNextToken();
-			if (t1 != null && t1.categorie == KeyWord.TOK_ID) {
+			Token idToken = getNextToken();
+			if (idToken != null && idToken.categorie == KeyWord.TOK_ID) {
 				List<String> args = new ArrayList<>();
-				t1 = getNextToken();
+				Token t1 = getNextToken();
 				if (t1 != null && t1.categorie == KeyWord.TOK_PARENTHESE_O) { //si fonction avec paramètres
 					t1 = getNextToken();
 					if (t1 != null && t1.categorie == KeyWord.TOK_INT) {
@@ -607,7 +607,7 @@ public class AnalyserSyntaxique {
 							throw new AnalyserSyntaxiqueException("Y a rien après la signature wesh' ", t1);
 						List<Noeud> enfants = new ArrayList<Noeud>();
 						enfants.add(S);
-						Noeud N = new Noeud(NoeudType.ND_DEFFONCTION, enfants);
+						Noeud N = new Noeud(NoeudType.ND_DEFFONCTION, enfants, idToken);
 						N.setArgs(args);
 						return N;
 					}
@@ -633,7 +633,7 @@ public class AnalyserSyntaxique {
 			t=getNextToken();
 		}
 		if (getNextToken()!= null){
-			throw new AnalyserSyntaxiqueException("token tout seul", t);
+			throw new AnalyserSyntaxiqueException("Token tout seul ou fonction mal définie", t);
 		}
 
 		return new Noeud(NoeudType.ND_MASTER, enfants);
