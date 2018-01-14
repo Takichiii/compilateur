@@ -20,27 +20,35 @@ public class AnalyserSyntaxique {
 		if (t.categorie == KeyWord.TOK_VALEUR){
 			return new Noeud(NoeudType.ND_CONST, t.getValeur());
 		}
-		if (t.categorie == KeyWord.TOK_ID){
+		if (t.categorie == KeyWord.TOK_ID) {
 			Token t1 = getNextToken();
-			//appel de fonctions
-			if (t1.getCategorie() == KeyWord.TOK_PARENTHESE_O){
-				//TODO appel fonction
-				List<Noeud> enfants = new ArrayList<Noeud>();
-				Noeud N;
-				t=getNextToken();
-				while((N = expression(t))!=null)
-				{
-					enfants.add(N);
-					t=getNextToken();
+			//appel de fonction
+			if (t1.getCategorie() == KeyWord.TOK_PARENTHESE_O) {
+				t1 = getNextToken();
+				if (t1.categorie == KeyWord.TOK_VALEUR || t1.categorie == KeyWord.TOK_ID) {//si fonction avec paramètres
+					List<Noeud> enfants = new ArrayList<Noeud>();
+					enfants.add(new Noeud(NoeudType.ND_REFVAR, t1)); //1er argument
+					t1 = getNextToken();
+					while (t1.categorie == KeyWord.TOK_VIRGULE) { //plus d'1 argument
+						t1 = getNextToken();
+						if (t1.categorie == KeyWord.TOK_VALEUR || t1.categorie == KeyWord.TOK_ID) {
+							enfants.add(new Noeud(NoeudType.ND_REFVAR, t1));
+							t1 = getNextToken();
+						} else
+							throw new AnalyserSyntaxiqueException("Deuxième argument manquant ou virgule en trop!", t);
+					}
 				}
-				return new Noeud(NoeudType.ND_CALL, t);
+				if (t1.categorie == KeyWord.TOK_PARENTHESE_F) { //si fonction sans paramètres
+					return new Noeud(NoeudType.ND_CALL, t1);
+				} else throw new AnalyserSyntaxiqueException("Oublie de la parenthèse fermante", t);
 			}
-			//identifiant
+			//simple identifiant
 			else {
 				undo();
 				return new Noeud(NoeudType.ND_REFVAR, t);
 			}
 		}
+
 		if (t.categorie == KeyWord.TOK_MOINS){
 			Noeud N = primaire(getNextToken());
 			if (N == null)
@@ -49,8 +57,6 @@ public class AnalyserSyntaxique {
 			enfants.add(N);
 			return new Noeud(NoeudType.ND_MOINSU, enfants);
 		}
-
-			
 		return null;
 	}
 

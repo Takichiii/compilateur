@@ -7,6 +7,9 @@ import java.util.Stack;
 public class GenerationCode {
 
     int compteur = 0;
+    int L1 = 0;
+    int L2 =0;
+    Stack<Integer> stack= new Stack<Integer>();
 
 
     public int genLabel() {
@@ -52,7 +55,7 @@ public class GenerationCode {
             sb.append("and.i");
         }
 
-        //IF
+        //TODO IF fini?
         else if (N.getType() == NoeudType.ND_IF) {
             int L1 = genLabel();
             int L2 = genLabel();
@@ -68,34 +71,30 @@ public class GenerationCode {
 
         //WHILE
         else if (N.getType() == NoeudType.ND_LOOP) {
-            int L = genLabel();
-            sb.append("." + L);
-            sb.append(gencode(N.getEnfants().get(0)));
-            sb.append("jump" + L);
-        }
-
-        //TODO BLOCK fini?
-        else if (N.getType() == NoeudType.ND_BLOCK) {
-            int L = genLabel();
-            sb.append("." + L);
-            sb.append(gencode(N.getEnfants().get(0)));
-            sb.append(gencode(N.getEnfants().get(1)));
-            sb.append("jump" + L);
-        }
-        //TODO BREAK CONTINUE
-        else if (N.getType() == NoeudType.ND_BREAK || N.getType() == NoeudType.ND_CONTINUE) {
-            Stack s = new Stack();
-            sb.append("push");//TODO
-            s.push(0);
-            s.push(0);
-            int L1 = genLabel();
-            int L2 = genLabel();
-            s.push(L1);
-            s.push(L2);
+            stack.push(L1);
+            stack.push(L2);
+            L1 = genLabel();
+            L2 = genLabel();
             sb.append("." + L1);
             sb.append(gencode(N.getEnfants().get(0)));
+            sb.append("jump" + L1);
             sb.append("." + L2);
-            sb.append("pop"); // TODO
+            L2 = stack.pop();
+            L1 = stack.pop();
+        }
+
+        //BLOCK
+        else if (N.getType() == NoeudType.ND_BLOCK) {
+            sb.append(gencode(N.getEnfants().get(0)));
+            sb.append(gencode(N.getEnfants().get(1)));
+        }
+        //BREAK CONTINUE
+        else if (N.getType() == NoeudType.ND_BREAK || N.getType() == NoeudType.ND_CONTINUE) {
+            sb.append("." + L1);
+            sb.append(gencode(N.getEnfants().get(0)));
+            sb.append("jump" + L1);
+            sb.append("." + L2);
+
         }
 
         //CALL
@@ -157,7 +156,6 @@ public class GenerationCode {
             for (int i = 0; i < enfants.size(); i++) {
                 sb.append(gencode(enfants.get(i)));
             }
-            //TODO est-ce tout?
         }
 
         sb.append("\n");
