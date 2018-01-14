@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AnalyserSyntaxique {
+
+
 	
 	public List<Token> tokenList;
 	public int compteur;
@@ -57,6 +59,24 @@ public class AnalyserSyntaxique {
 			enfants.add(N);
 			return new Noeud(NoeudType.ND_MOINSU, enfants);
 		}
+
+		if (t.categorie == KeyWord.TOK_PARENTHESE_O) {
+			Token t1 = getNextToken();
+			Noeud N = primaire(t1);
+			if (N!=null) {
+				t1 = getNextToken();
+				if (t1.getCategorie() == KeyWord.TOK_PARENTHESE_F) {
+					return N;
+				}
+			}
+			else {
+				N = expression(t1);
+				t1 = getNextToken();
+				if (t1.getCategorie() == KeyWord.TOK_PARENTHESE_F) {
+					return N;
+				}
+			}
+		}
 		return null;
 	}
 
@@ -70,6 +90,7 @@ public class AnalyserSyntaxique {
 		Token t1 = getNextToken();
 		if (t1 == null)
 			return N;
+
 		if (t1.getCategorie() == KeyWord.TOK_MUL) {
 			Noeud N2 = facteur(getNextToken());
 			if (N2 == null)
@@ -443,13 +464,13 @@ public class AnalyserSyntaxique {
 					throw new AnalyserSyntaxiqueException("Problème : omission de l'initialisation dans le for", t);
 				}
 				t1 = getNextToken();
-				if (t1!=null && t1.categorie == KeyWord.TOK_VIRGULE) {
+				if (t1!=null && t1.categorie == KeyWord.TOK_PV) {
 					Noeud E = expression(getNextToken());
 					if (E == null) {
 						throw new AnalyserSyntaxiqueException("Problème : omission de la condition d'arrêt dans le for", t);
 					}
 					t1 = getNextToken();
-					if (t1!=null && t1.categorie == KeyWord.TOK_VIRGULE) {
+					if (t1!=null && t1.categorie == KeyWord.TOK_PV) {
 						Noeud A2 = statement(getNextToken());
 						if (A2 == null) {
 							throw new AnalyserSyntaxiqueException("Problème : omission de l'incrémentation dans le for", t);
@@ -493,7 +514,7 @@ public class AnalyserSyntaxique {
 					}
 
 				}else {
-					throw new AnalyserSyntaxiqueException("Problème : omission ',' après initialisation dans le for", t);
+					throw new AnalyserSyntaxiqueException("Problème : omission de ';' après initialisation dans le for", t);
 
 				}
 			}else {

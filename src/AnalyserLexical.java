@@ -115,7 +115,7 @@ public class AnalyserLexical {
 			StringBuilder sb = new StringBuilder();
 			sb.append(c);
 			
-			if (compteur+1<charList.size() && (Character.getType(charList.get(compteur+1))== Character.MATH_SYMBOL || Character.getType(charList.get(compteur+1))==24))
+			if (compteur+1<charList.size() && (Character.getType(charList.get(compteur+1))== Character.MATH_SYMBOL || Character.getType(charList.get(compteur+1))==24 ) && charList.get(compteur+1)!=';')
 			{
 				sb.append(charList.get(compteur+1));
 				compteur++;

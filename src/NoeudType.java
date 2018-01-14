@@ -10,10 +10,10 @@ public enum NoeudType {
 	ND_OU("||"),
 	
 	//type de noeud pour un identifiant
-	ND_REFVAR("id"),
-	ND_AFFVAR("id"),
+	ND_REFVAR("VarRef"),
+	ND_AFFVAR("VarAff"),
 	ND_BLOCK("block"),
-	ND_VARDECL("varDecl"),
+	ND_VARDECL("VarDecl"),
 	
 	ND_CONST("valeur"),
 

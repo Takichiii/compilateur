@@ -1,13 +1,5 @@
-{
-	b=32;
-	while (b!=a && b==2)
-	{
-		c=5;
-		if (a<=c)
-			a=c;
-		else
-		{
-			d;
-		}
-	}
+int main (){
+    for (i=0; i<3; i=i+1)
+        2;
+    return 0;
 }
