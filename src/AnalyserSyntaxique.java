@@ -62,21 +62,13 @@ public class AnalyserSyntaxique {
 
 		if (t.categorie == KeyWord.TOK_PARENTHESE_O) {
 			Token t1 = getNextToken();
-			Noeud N = primaire(t1);
-			if (N!=null) {
+			Noeud N = expression(t1);
 				t1 = getNextToken();
 				if (t1.getCategorie() == KeyWord.TOK_PARENTHESE_F) {
 					return N;
 				}
 			}
-			else {
-				N = expression(t1);
-				t1 = getNextToken();
-				if (t1.getCategorie() == KeyWord.TOK_PARENTHESE_F) {
-					return N;
-				}
-			}
-		}
+
 		return null;
 	}
 
@@ -459,19 +451,22 @@ public class AnalyserSyntaxique {
 		if (t.categorie == KeyWord.TOK_FOR){
 			Token t1 = getNextToken();
 			if (t1!=null && t1.categorie == KeyWord.TOK_PARENTHESE_O) {
-				Noeud A1 = statement(getNextToken());
+				t1 = getNextToken();
+				Noeud A1 = affectation(t1);
 				if (A1 == null) {
 					throw new AnalyserSyntaxiqueException("Problème : omission de l'initialisation dans le for", t);
 				}
 				t1 = getNextToken();
 				if (t1!=null && t1.categorie == KeyWord.TOK_PV) {
-					Noeud E = expression(getNextToken());
+					t1 = getNextToken();
+					Noeud E = expression(t1);
 					if (E == null) {
 						throw new AnalyserSyntaxiqueException("Problème : omission de la condition d'arrêt dans le for", t);
 					}
 					t1 = getNextToken();
 					if (t1!=null && t1.categorie == KeyWord.TOK_PV) {
-						Noeud A2 = statement(getNextToken());
+						t1 = getNextToken();
+						Noeud A2 = affectation(t1);
 						if (A2 == null) {
 							throw new AnalyserSyntaxiqueException("Problème : omission de l'incrémentation dans le for", t);
 						}
@@ -482,39 +477,44 @@ public class AnalyserSyntaxique {
 								throw new AnalyserSyntaxiqueException("Problème : omission du statement du for", t);
 							}
 							List<Noeud> enfantsBlock = new ArrayList<Noeud>();
+							List<Noeud> enfantsBlockIf = new ArrayList<Noeud>();
 							List<Noeud> enfantsLoop = new ArrayList<Noeud>();
 							List<Noeud> enfantsIf = new ArrayList<Noeud>();
 
+							//enfants block du if
+							enfantsBlockIf.add(S);
+							enfantsBlockIf.add(A2);
+							Noeud blockIf = new Noeud(NoeudType.ND_BLOCK, enfantsBlockIf);//crée noeud block
+
 							//enfants if
 							enfantsIf.add(E);
-							enfantsIf.add(S);
+							enfantsIf.add(blockIf);
 							enfantsIf.add(new Noeud(NoeudType.ND_BREAK,t1));
 							Noeud If = new Noeud(NoeudType.ND_IF, enfantsIf);//crée noeud if
 
+
 							//enfants loop
-							enfantsLoop.add(A2);
 							enfantsLoop.add(If);
 							Noeud loop = new Noeud(NoeudType.ND_LOOP, enfantsLoop);//crée noeud loop
 
-							//enfants block
+							//enfants block global
 							enfantsBlock.add(A1);
+							enfantsBlock.add(loop);
 							Noeud block = new Noeud(NoeudType.ND_BLOCK, enfantsBlock);//crée noeud block
 
-							enfantsLoop.add(block);
-
-							return new Noeud(NoeudType.ND_BLOCK, enfantsLoop); //noeud block
+							return block; //noeud block
 						}else {
 							throw new AnalyserSyntaxiqueException("Problème : omission ')' après l'incrémentation dans le for", t);
 
 						}
 
 					}else {
-						throw new AnalyserSyntaxiqueException("Problème : omission ',' après la condition d'arrêt dans le for", t);
+						throw new AnalyserSyntaxiqueException("Problème : omission ';' après la condition d'arrêt dans le for", t);
 
 					}
 
 				}else {
-					throw new AnalyserSyntaxiqueException("Problème : omission de ';' après initialisation dans le for", t);
+					throw new AnalyserSyntaxiqueException("Problème : omission de ';' après initialisation dans le for", t1);
 
 				}
 			}else {
