@@ -1,18 +1,17 @@
 
 public class Symbole {
-	String type;
-	String emplacement;
-	int slot;
+	private int nbArgs;
+	private int slot;
 	
 
-	public Symbole(String type, String emplacement){
-		this.type=type;
-		this.emplacement=emplacement;
-	}
-	
-	public Symbole(){
+	public Symbole(int nbArgs){
+		this.nbArgs = nbArgs;
 	}
 
+	public int getNbAgrs() {
+		return nbArgs;
+	}
+	
 	public int getSlot() {
 		return slot;
 	}

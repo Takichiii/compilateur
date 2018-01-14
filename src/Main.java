@@ -14,21 +14,21 @@ public class Main {
 		
 		AnalyserLexical analyserLexical = new AnalyserLexical(reader);
 		ArrayList<Token> list = (ArrayList<Token>) analyserLexical.getAllTokens();
-		for (Token t : list)
-		{
-			if ( t.categorie== KeyWord.TOK_ID)
-				System.out.println(t.identifiant);
-			else if (t.categorie == KeyWord.TOK_VALEUR)
-				System.out.println(t.valeur);
-			else System.out.println(t.categorie.valeur);
-		}
+//		for (Token t : list)
+//		{
+//			if ( t.categorie== KeyWord.TOK_ID)
+//				System.out.println(t.identifiant);
+//			else if (t.categorie == KeyWord.TOK_VALEUR)
+//				System.out.println(t.valeur);
+//			else System.out.println(t.categorie.valeur);
+//		}
 		AnalyserSyntaxique analyserSyntaxique = new AnalyserSyntaxique(list);
+		
 		
 		Noeud n;
 		try {
 			n = analyserSyntaxique.master(analyserSyntaxique.getNextToken());
-//			System.out.println("synta");
-			System.out.println("arbre : ");
+			AnalyserSemantique analyserSemantique = new AnalyserSemantique(n);
  			n.print();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

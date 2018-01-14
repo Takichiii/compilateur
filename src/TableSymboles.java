@@ -16,24 +16,34 @@ public class TableSymboles {
 		tableSymboles.pop();
 	}
 	
-	public Symbole newSymbole(Token token){
+	public Symbole newSymbole(String id, int nbArgs ){
 		HashMap<String, Symbole> symboles = tableSymboles.peek(); 
-		if (symboles.containsKey(token.getIdentifiant()))
+		if (symboles.containsKey(id))
 		{
-			System.out.println("La variable "+ token.getIdentifiant() + " a déjà été déclaré à la ligne "+ token.getLigne());
+			System.out.println("La variable "+ id + " a dï¿½jï¿½ ï¿½tï¿½ dï¿½clarï¿½");
 			return null;
 		}
-		Symbole symbole = new Symbole();
-		symboles.put(token.getIdentifiant(), symbole);
+		Symbole symbole = new Symbole(nbArgs);
+		symboles.put(id, symbole);
 		return symbole;
-		
 	}
 	
 	public Symbole recherche(Token token){
 		 Symbole symbole = tableSymboles.peek().get(token.getIdentifiant());
 		 if (symbole == null)
 		 {
-			 System.out.println("La variable " + token.getIdentifiant() + " n'a pas été déclarée !");
+			 System.out.println("La variable " + token.getIdentifiant() + " n'a pas ï¿½tï¿½ dï¿½clarï¿½e !");
+			 return null;
+		 }
+		 return symbole;
+	}
+	
+	public Symbole rechercheMethode(Token token){
+		 Symbole symbole = tableSymboles.firstElement().get(token.getIdentifiant());
+		 if (symbole == null)
+		 {
+			 System.out.println("La variable " + token.getIdentifiant() + " n'a pas ï¿½tï¿½ dï¿½clarï¿½e !");
+			 return null;
 		 }
 		 return symbole;
 	}

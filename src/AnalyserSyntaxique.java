@@ -18,7 +18,7 @@ public class AnalyserSyntaxique {
 			return null;
 		}
 		if (t.categorie == KeyWord.TOK_VALEUR){
-			return new Noeud(NoeudType.ND_CONST, t.getValeur());
+			return new Noeud(NoeudType.ND_CONST, t);
 		}
 		if (t.categorie == KeyWord.TOK_ID){
 			Token t1 = getNextToken();
