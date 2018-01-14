@@ -18,7 +18,7 @@ public class AnalyserSyntaxique {
 			return null;
 		}
 		if (t.categorie == KeyWord.TOK_VALEUR){
-			return new Noeud(NoeudType.ND_CONST, t.getValeur());
+			return new Noeud(NoeudType.ND_CONST, t);
 		}
 		if (t.categorie == KeyWord.TOK_ID) {
 			Token t1 = getNextToken();
@@ -294,7 +294,7 @@ public class AnalyserSyntaxique {
 		}
 		//A';' | E ';'
 		Noeud N = affectation(t);
-		if (N != null ){
+		if (N != null || (N = expression(t)) != null){
 			Token t1 = getNextToken();
 			if (t1!=null && t1.categorie == KeyWord.TOK_PV){
 				return N;

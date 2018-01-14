@@ -5,18 +5,11 @@ public class Noeud {
 	
 	private NoeudType type;
 	private int slot;
-	private int valeur;
-	private String identifiant;
+	private int nbVarLocale=0;
 	private Token token;
 	private List<Noeud> enfants;
 	private List<String> args;
 
-	public Noeud(NoeudType type, int valeur){
-		this.type = type;
-		this.valeur = valeur;
-		this.enfants = new ArrayList<>();
-		this.args = new ArrayList<>();
-	}
 	public Noeud(NoeudType type, Token token){
 		this.type = type;
 		this.token = token;
@@ -42,7 +35,7 @@ public class Noeud {
     private void print(String prefix, boolean isTail) {
     	String str  = "";
     	if (type == NoeudType.ND_CONST)
-    		str=Integer.toString(valeur);
+    		str=Integer.toString(getValeur());
     	else if (type == NoeudType.ND_REFVAR)
     		str=getIdentifiant();
     	else
@@ -68,10 +61,7 @@ public class Noeud {
 		this.type = type;
 	}
 	public int getValeur() {
-		return valeur;
-	}
-	public void setValeur(int valeur) {
-		this.valeur = valeur;
+		return token.getValeur();
 	}
 	public Token getToken() {
 		return token;
@@ -97,9 +87,12 @@ public class Noeud {
 	public void setArgs(List<String> args) {
 		this.args = args;
 	}
-	public void setIdentifiant(String identifiant) {
-		this.identifiant = identifiant;
+	
+	public int getNbVarLocale() {
+		return nbVarLocale;
 	}
-
+	public void setNbVarLocale(int nbVarLocale) {
+		this.nbVarLocale = nbVarLocale;
+	}
 
 }
