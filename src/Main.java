@@ -9,7 +9,7 @@ public class Main {
 			System.err.println("Veuillez entrer le chemin du fichier � compiler !");
 			return;
 		}*/
-		InputStream in = new FileInputStream(new File("src/ressource/test.txt"));
+		InputStream in = new FileInputStream(new File("src/ressource/test2.txt"));
 		Reader reader = new InputStreamReader(in);
 		
 		AnalyserLexical analyserLexical = new AnalyserLexical(reader);

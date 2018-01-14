@@ -633,7 +633,7 @@ public class AnalyserSyntaxique {
 			t=getNextToken();
 		}
 		if (getNextToken()!= null){
-			throw new AnalyserSyntaxiqueException("token tout seul", t);
+			throw new AnalyserSyntaxiqueException("Token tout seul ou fonction mal définie", t);
 		}
 
 		return new Noeud(NoeudType.ND_MASTER, enfants);
